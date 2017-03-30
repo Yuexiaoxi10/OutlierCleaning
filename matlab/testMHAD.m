@@ -12,7 +12,7 @@ A = data(label_act == 1);
 n = length(A);
 ys = cell(1, n);
 for i = 1:n
-    ys{i} = A{i}(1:3,:); % get the first joint
+    ys{i} = A{i}(3,30:end-30); % get the first joint
 end
 ys = getVelocity(ys);
 
@@ -20,7 +20,7 @@ A2 = data(label_act == 3);
 n2 = length(A2);
 ys2 = cell(1, n2);
 for i = 1:n2
-    ys2{i} = A2{i}(1:3,:); % get the first joint
+    ys2{i} = A2{i}(3,30:end-30); % get the first joint
 end
 ys2 = getVelocity(ys2);
 
@@ -51,7 +51,7 @@ r = U(:, end);
 
 cvx_solver mosek
 % outlier cleaning
-% ys_test = ys2;
+ys_test = ys2;
 e = zeros(1, length(ys_test));
 for i = 1:length(ys_test)
 y = ys_test{i};
@@ -61,7 +61,7 @@ variables y_hat(size(y))
 % [Hy_hat,S] = formHankel_colfixed(y_hat, nc);
 Hy_hat = blockHankel(y_hat, [size(y_hat, 2)-nc+1, nc]);
 Hy_hat * r == 0;
-obj = norm(y-y_hat, 1);% y = y_hat + e; e = y-y_hat; 
+obj = norm(y-y_hat, 2);% y = y_hat + e; e = y-y_hat; 
 minimize(obj)
 cvx_end
 
