@@ -1,8 +1,11 @@
 % test real data, MHAD as example
 
+clear all
+
 addpath(genpath('../matlab'));
 
-dataPath = '~/research/data/MHAD';
+% dataPath = '~/research/data/MHAD';
+dataPath = '/Users/zhangyuexi/Documents/LabLife/Thesis/Git/OutlierCleaning/matlab';
 load(fullfile(dataPath, 'MHAD_data_whole.mat'));
 
 A = data(label_act == 1);
