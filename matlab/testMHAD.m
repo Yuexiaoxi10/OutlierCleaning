@@ -43,7 +43,7 @@ ys2_test = ys2(testInd);
 % ys_test = ys2(testInd);
 
 opt.metric = 'JBLD';
-opt.H_rows = 10;
+opt.H_rows = 3;
 opt.H_structure = 'HtH';
 opt.sigma = 1e-4;
 
@@ -70,7 +70,7 @@ r2 = V2(:, end);
 % [r,r_i,T] = call_ssrrr_lp(X,epsilon,fix,tol,step);
 
 
-cvx_solver gurobi_2
+
 % outlier cleaning
 % ys_test = ys;
 % ys_test = ys2;
@@ -81,12 +81,13 @@ for i = 1:length(ys_test)
 y = ys_test{i};
 y = y / norm(y);
 nc = opt.H_rows;
-y_hat = method_l2(y, r, nc);
-y2_hat = method_l2(y, r2, nc);
+% y_hat = method_l2(y, r, nc);
+% y2_hat = method_l2(y, r2, nc);
 
 % Proposed
-% lambda = 1000;
-% y_hat = method_l1l2(y, r, nc, lambda);
+lambda = 1000;
+y_hat = method_l1l2(y, r, nc, lambda);
+y2_hat = method_l1l2(y, r2, nc, lambda);
 
 e(i) = norm(y-y_hat)
 e2(i) = norm(y-y2_hat)
