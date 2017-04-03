@@ -1,6 +1,7 @@
 % test real data, MHAD as example
 
 addpath(genpath('../matlab'));
+addpath(genpath('../3rdParty'));
 
 dataPath = '~/research/data/MHAD';
 load(fullfile(dataPath, 'MHAD_data_whole.mat'));
@@ -32,25 +33,37 @@ ys_test = ys(testInd);
 
 
 opt.metric = 'JBLD';
-opt.H_rows = 6;
+opt.H_rows = 10;
 opt.H_structure = 'HtH';
 opt.sigma = 1e-4;
 
-HH = getHH(ys_train, opt);
+[HH, H] = getHH(ys_train, opt);
 
 HH_center = steinMean(cat(3, HH{1:end}));
 
-% get regressor
-[U,S,V] = svd(HH_center);
+% get regressor from stein mean of Gram matrix
+% [U,S,V] = svd(HH_center);
+[U,S,V] = svd(H{3});
 s = diag(S)
-r = U(:, end);
+r = V(:, end);
+
+% % get regressor from ssrrr
+% X = cat(1, H{:})';
+% epsilon = 1;
+% fix = opt.H_rows;
+% tol = 1e-4;
+% step = 0;
+% [r,r_i,T] = call_ssrrr_lp(X,epsilon,fix,tol,step);
 
 
-cvx_solver mosek
+cvx_solver gurobi_2
 % outlier cleaning
-ys_test = ys2;
+ys_test = ys_train;
+% ys_test = ys;
+% ys_test = ys2;
 e = zeros(1, length(ys_test));
 for i = 1:length(ys_test)
+% for i = 32
 y = ys_test{i};
 nc = opt.H_rows;
 cvx_begin quiet
@@ -63,6 +76,12 @@ minimize(obj)
 cvx_end
 
 e(i) = norm(y-y_hat)
+plot(y, 'x-');
+hold on;
+plot(y_hat, 'o-');
+hold off;
+% pause;
+% keyboard;
 end
 
 % plot(y(1,:),y(2,:), 'x-');
@@ -70,3 +89,4 @@ end
 % plot(y_hat(1,:),y_hat(2,:), 'o-');
 % hold off;
 % legend y_{noisy} y_{estimate}
+
