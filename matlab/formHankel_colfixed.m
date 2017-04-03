@@ -1,15 +1,21 @@
 function [Hy_hat, S, Yt] = formHankel_colfixed(Data,nc)
-yt = Data;
+yt = Data';
 [dim,N] = size(yt);
 point = yt(:);
 nr = N - nc + 1; % rows of hankel
 L = length(point); % total number of points = num(x)+num(y)
 % a = [1 0];
-% A = blkdiag(a,a,a); %  
-%  A = [1 0 0 0 0;0 0 1 0 0;0 0 0 0 1];
-A = [1 zeros(1,dim*2);zeros(1,dim) 1 zeros(1,dim);...
-    zeros(1,dim*2) 1];
- 
+
+% A = [1 zeros(1,dim*2);zeros(1,dim) 1 zeros(1,dim);...
+%     zeros(1,dim*2) 1];
+% A is a fixed matrix according to the dim of data and nc of hankel
+A = zeros(nc,(nc-1)*dim+1);
+[~,ncol] = size(A);
+for i = 1 : nc
+    A(i,:) = [zeros(1,(i-1)*dim) 1 zeros(1,ncol-((i-1)*dim+1))];
+    
+end
+
 q = L - size(A,2);
 
 %%
