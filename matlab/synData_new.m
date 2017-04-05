@@ -155,7 +155,7 @@ Pre2 = mean(precision_sr,1);
 plot(outliers,Pre1,'r-*'), hold on
 plot(outliers,Pre2,'y-*');
 
-title('Precision v.s outliers','FontSize',15);
+title('Accuracy v.s outliers','FontSize',15);
 
 
 
