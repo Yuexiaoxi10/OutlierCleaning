@@ -24,6 +24,9 @@ for i = 1:n2
 end
 ys2 = getVelocity(ys2);
 
+[ys, w0] = fftAlign(ys);
+[ys2, w0] = fftAlign(ys2, w0);
+
 rng(0);
 index = randperm(n);
 m = round(n/2);
@@ -31,8 +34,8 @@ trainInd = index(1:m);
 testInd = index(m+1:end);
 ys_train = ys(trainInd);
 ys_test = ys(testInd);
-% ys_train = ys(3); %ys_train{1} = ys_train{1}(1:60);
-% ys_test = ys_train;
+% ys_train = ys(3); % ys_train{1} = ys_train{1}(1:60);
+% ys_test = ys(3);% ys_test{1} = ys_test{1}(61:end);
 
 index = randperm(n2);
 m = round(n2/2);
@@ -43,7 +46,7 @@ ys2_test = ys2(testInd);
 % ys_test = ys2(testInd);
 
 opt.metric = 'JBLD';
-opt.H_rows = 3;
+opt.H_rows = 5;
 opt.H_structure = 'HtH';
 opt.sigma = 1e-4;
 
@@ -98,7 +101,7 @@ plot(y_hat, 'o-');
 plot(y2_hat, 'square-');
 hold off;
 
-55;
+% 55;
 pause;
 % keyboard;
 end
