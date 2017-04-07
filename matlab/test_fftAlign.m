@@ -32,5 +32,5 @@ for i = 1:length(ys)
     plot(ys_align{i});
     title(sprintf('Instance %d', i));
     hold off;
-%     pause
+    pause
 end

@@ -24,8 +24,8 @@ for i = 1:n2
 end
 ys2 = getVelocity(ys2);
 
-[ys, w0] = fftAlign(ys);
-[ys2, w0] = fftAlign(ys2, w0);
+% [ys, w0] = fftAlign(ys);
+% [ys2, w0] = fftAlign(ys2, w0);
 
 rng(0);
 index = randperm(n);
@@ -57,12 +57,18 @@ HH_center = steinMean(cat(3, HH{1:end}));
 % s = diag(S)
 r = V(:, end);
 
+
 [HH2, H2] = getHH(ys2_train, opt);
 HH2_center = steinMean(cat(3, HH2{1:end}));
 [U2,S2,V2] = svd(HH2_center);
-% [U,S,V] = svd(H{1});
+% [U2,S2,V2] = svd(H2{1});
 % s = diag(S)
 r2 = V2(:, end);
+
+[~, w1] = fftAlign(ys_train(1));
+[~, w2] = fftAlign(ys2_train(1));
+p1 = roots(flipud(r));
+p2 = roots(flipud(r2));
 
 % % get regressor from ssrrr
 % X = cat(1, H{:})';
@@ -77,19 +83,28 @@ r2 = V2(:, end);
 % outlier cleaning
 % ys_test = ys;
 % ys_test = ys2;
+% ys_test = ys2_test;
 e = zeros(1, length(ys_test));
 e2 = zeros(1, length(ys_test));
 for i = 1:length(ys_test)
 % for i = 32
 y = ys_test{i};
-y = y / norm(y);
+% y = y / norm(y);
+[~, w] = fftAlign(ys_test(i));
+alpha1 = w / w1;
+p1dtw = p1.^(alpha1);
+r = flipud(poly(p1dtw)');
+alpha2 = w / w2;
+p2dtw = p2.^(alpha2);
+r2 = flipud(poly(p2dtw)');
+
 nc = opt.H_rows;
 % y_hat = method_l2(y, r, nc);
 % y2_hat = method_l2(y, r2, nc);
 
 % Proposed
 lambda = 1000;
-y_hat = method_l1l2(y, r, nc, lambda);
+[y_hat,o_hat,n_hat] = method_l1l2(y, r, nc, lambda);
 y2_hat = method_l1l2(y, r2, nc, lambda);
 
 e(i) = norm(y-y_hat)
@@ -99,6 +114,7 @@ plot(y, 'x-');
 hold on;
 plot(y_hat, 'o-');
 plot(y2_hat, 'square-');
+title(sprintf('Test Instance %d',i));
 hold off;
 
 % 55;

@@ -1,4 +1,4 @@
-function y_hat = method_l1l2(y, r, nc, lambda)
+function [y_hat, outlier_hat, noise_hat] = method_l1l2(y, r, nc, lambda)
 
 % lambda = 1000;
 cvx_begin quiet

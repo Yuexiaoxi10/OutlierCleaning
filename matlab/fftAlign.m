@@ -6,8 +6,9 @@ end
 
 yOut = cell(size(y));
 for i = 1:length(y)
-    if i==16, keyboard; end
-    N = length(y{i});
+%     if i==16, keyboard; end
+%     N = length(y{i});
+N = 1000;
     f = fft(y{i}, N);
     f_abs = abs(f);
     if mod(N, 2) == 0
