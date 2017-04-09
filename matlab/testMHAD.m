@@ -24,8 +24,13 @@ for i = 1:n2
 end
 ys2 = getVelocity(ys2);
 
-% [ys, w0] = fftAlign(ys);
-% [ys2, w0] = fftAlign(ys2, w0);
+[ys, w0] = fftAlign(ys);
+[ys2, w0] = fftAlign(ys2, w0);
+for i=1:length(ys),
+%     plot(ys{i}); 
+    plot(abs(fft(ys{i},1000)))
+    hold on;
+end, hold off;
 
 rng(0);
 index = randperm(n);
@@ -65,10 +70,10 @@ HH2_center = steinMean(cat(3, HH2{1:end}));
 % s = diag(S)
 r2 = V2(:, end);
 
-[~, w1] = fftAlign(ys_train(1));
-[~, w2] = fftAlign(ys2_train(1));
-p1 = roots(flipud(r));
-p2 = roots(flipud(r2));
+% [~, w1] = fftAlign(ys_train(1));
+% [~, w2] = fftAlign(ys2_train(1));
+% p1 = roots(flipud(r));
+% p2 = roots(flipud(r2));
 
 % % get regressor from ssrrr
 % X = cat(1, H{:})';
@@ -90,13 +95,13 @@ for i = 1:length(ys_test)
 % for i = 32
 y = ys_test{i};
 % y = y / norm(y);
-[~, w] = fftAlign(ys_test(i));
-alpha1 = w / w1;
-p1dtw = p1.^(alpha1);
-r = flipud(poly(p1dtw)');
-alpha2 = w / w2;
-p2dtw = p2.^(alpha2);
-r2 = flipud(poly(p2dtw)');
+% [~, w] = fftAlign(ys_test(i));
+% alpha1 = w / w1;
+% p1dtw = p1.^(alpha1);
+% r = flipud(poly(p1dtw)');
+% alpha2 = w / w2;
+% p2dtw = p2.^(alpha2);
+% r2 = flipud(poly(p2dtw)');
 
 nc = opt.H_rows;
 % y_hat = method_l2(y, r, nc);

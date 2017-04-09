@@ -6,9 +6,9 @@ end
 
 yOut = cell(size(y));
 for i = 1:length(y)
-%     if i==16, keyboard; end
+%     if i==6, keyboard; end
 %     N = length(y{i});
-N = 1000;
+N = 5000;
     f = fft(y{i}, N);
     f_abs = abs(f);
     if mod(N, 2) == 0
@@ -19,13 +19,14 @@ N = 1000;
     if i == 1 && isempty(w0)
         index0 = index;
         w0 = (2*pi/N) * (index0-1);
+        yOut{i} = y{i};
         continue;
     end
     w = (2*pi/N) * (index-1);
     scale = w / (w0 + eps);
     fNew = mapFreq(f, scale);
-    yOut{i} = ifft(fNew, 'symmetric');
-    
+    yOut{i} = ifft(fNew);
+    yOut{i} = yOut{i}(1:floor(length(y{i})*scale));
 end
 
 end
@@ -45,7 +46,7 @@ wrNew = wr / scale;
 ind1 = cell(1, length(wr));
 for i = 1:length(wrNew)
     [~, z] = min(abs(wrNew(i)-wr));
-    ind1{i} = [ind1{i}, z];
+    ind1{z} = [ind1{z}, i];
 end
 
 % get fNew
@@ -57,9 +58,11 @@ for i = 1:length(ind1)
 end
 
 if mod(N, 2) == 0
-    fNew(N/2+2:end) = fliplr(fNew(2:N/2));
+    fNew(N/2+2:end) = fliplr(conj(fNew(2:N/2)));
+    fNew(N/2+1) = real(fNew(N/2+1));
 else
-    fNew((N+1)/2+1:end) = fliplr(fNew(2:(N+1)/2));
+    fNew((N+1)/2+1:end) = fliplr(conj(fNew(2:(N+1)/2)));
 end
+fNew = fNew * scale;
 
 end
