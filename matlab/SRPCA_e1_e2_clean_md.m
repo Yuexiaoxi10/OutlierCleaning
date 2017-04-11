@@ -1,4 +1,5 @@
 function [D_est, hopt, eopt, e2opt]=SRPCA_e1_e2_clean_md(D,lambda,lambda2,mask)
+% This code solves the following problem with Inexact ALM algorithm
 % minimize ||A||_* + lambda * ||E1||_1 + lambda2 * ||E2||_F
 % subject to: D = A + E1 + E2
 
@@ -20,7 +21,8 @@ rho = 1.05;
 regul = 1e-2;
 
 weights = 1 ./ (ones(n,1)+regul);
-WM=[diag(weights),zeros(dim*m,n-dim*m);zeros(dim*m-n,n)];
+WM = zeros(dim*m, n);
+WM(eye(dim*m, n)==1) = weights;
 
 %%% create the structure matrix -------------------------------------------
 %%% SH (for hankel structures)
@@ -119,7 +121,7 @@ for ii = 1:3
     end
     loopcount
     weights=1./(svd(jopt(Hind))+regul);
-    WM=[diag(weights),zeros(dim*m,n-dim*m);zeros(dim*m-n,n)];
+    WM(eye(dim*m, n)==1) = weights;
      
 end
 
