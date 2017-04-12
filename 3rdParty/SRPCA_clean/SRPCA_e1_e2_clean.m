@@ -85,7 +85,7 @@ for(ii=1:3)
     y1opt=0*d;
     y2opt=0*jopt;
     
-    
+  10;  
     while((norm(d-hopt-eopt-e2opt)/sqrt(length(d))>1e-5 || norm(jopt-Sh*hopt)/sqrt(length(jopt))>1e-5 ) && loopcount<1000)
         loopcount=loopcount+1;
         
@@ -119,8 +119,8 @@ for(ii=1:3)
         
         
         
-        y1opt(:)=y1opt(:)+mu*(d-hopt-eopt-e2opt);
-        y2opt(:)=y2opt(:)+mu*full(jopt-Shs*hopt);
+        y1opt=y1opt+mu*(d-hopt-eopt-e2opt);
+        y2opt=y2opt+mu*full(jopt-Shs*hopt);
         
         mu=rho*mu;
         

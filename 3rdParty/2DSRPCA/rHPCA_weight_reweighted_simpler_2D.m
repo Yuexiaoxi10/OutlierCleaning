@@ -1,4 +1,4 @@
-function [Jopt Topt valCost rankEst aopt eopt]=rHPCA_weight_reweighted_simpler_2D(D,lambda,mask);
+function [Jopt Topt valCost rankEst aopt eopt]=rHPCA_weight_reweighted_simpler_2D(D,lambda,mask)
 %%%SRPCA Code for 2D vectors
 %%%written by Mustafa Ayazoglu 2012
 

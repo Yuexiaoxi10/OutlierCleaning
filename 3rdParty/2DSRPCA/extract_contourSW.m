@@ -169,7 +169,7 @@ for(k=1:length(contour))
     datacomx=trjx(cc(1):cc(end));
     datacomy=trjy(cc(1):cc(end));
 if horizon>2*hankelsize
-    Hcomx=hankelConstruction(datacomx,hankelsize);
+    Hcomx=hankelConstruction(datacomx,hankelsize); %1 x n
     Hcomy=hankelConstruction(datacomy,hankelsize);
 else
     Hcomx=hankel(datacomx(1:round(horizon/2)),datacomx(round(horizon/2):horizon));
