@@ -17,7 +17,7 @@ for i = 1:n
 end
 ys = getVelocity(ys);
 
-rk = 6;
+rk = 4;
 ys_h = cell(1, n);
 for i = 1:n
     ys_h{i} = hstln_mo(ys{i}, rk);
