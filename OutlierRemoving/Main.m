@@ -19,16 +19,16 @@ Jbld_total = struct;
  order = 2; %Moment order
  dim = 1;
  thres = nchoosek(order+dim, order); % threshold for SOS
-%%
-% Nvideo = 7;
-
-dt = 2;
+ dt = 2;
 windSize = 10;
 
 fram = 100;
 
-%for Nvideo = 1 : Nvid 
-for Nvideo = 1 : 2
+%% Step 1 : preprocssing data and getting JBLD values
+
+for Nvideo = 1 : Nvid 
+%for Nvideo = 1 : 2
+
     tic;
  [Pose_UYDP, label1, gt,chunk] = getPoses(videoPrediction_UYDP, label, Nvideo,fram);
 % %  Pose_UYDP = getPoses(videoPrediction_UYDP,label, Nvideo,fram);
@@ -47,7 +47,7 @@ SOS_total(Nvideo).SOS_flip = SOS_score_flip;
 ithOutlier(Nvideo).outlier = Outlier;
 ithOutlier(Nvideo).outlier_flip = Outlier_flip;
 
-%% Outlier frames
+%% Step 2 : Finding frames which contains outliers
 
 OutlierFram = cell(1,np);
  OutlierFram_flip = cell(1,np);
@@ -83,7 +83,7 @@ for k = 1 : np
      OutlierFram_Total{1,k} = ithFram_Total;
      
 
-% smooth tracjectory
+%% step 3: smooth tracjectory
         omega = ones(1,fram);
         omega(:,ithFram) = 0; % set omega equals to 0 at the frame of outlier
          omega(:,ithFram_flip_real) = 0;%flip back to the original order
@@ -102,7 +102,7 @@ for k = 1 : np
          
           % Using SRPCA    
 %             mask = ones(prod(size(Joint_Frm1{1,k})),1);
-%             Trajec_new_sr{1,k} = SRPCA_e1_e2_clean_md(Joint_Frm1{1,k}',lam1,lam2,mask');
+%             Trajec_new{1,k} = SRPCA_e1_e2_clean_md(Joint_Frm1{1,k}',lam1,lam2,mask');
 
         
     10;
