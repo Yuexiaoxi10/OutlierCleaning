@@ -1,5 +1,5 @@
 
-%  close all; clear;
+  close all; clear;
 % 
 Poles = GeneratePoles(100);
 %%
@@ -19,7 +19,7 @@ n = 100;
 a = -fliplr(r(2:end));
 Results = struct;
 
-count = 1; % number of initial conditions
+count = 200; % number of initial conditions
 
   Accuracy_p = zeros(count,length(outliers));
   Accuracy_sr = zeros(count, length(outliers));
@@ -79,8 +79,8 @@ nc = 3;
 %% Proposed
 
 lamda = 1;
-lam1 = 150;
-lam2 = 50;
+lam1 = 10;
+lam2 = Inf;
 
 eta = 5; 
 % cvx_solver Mosek
@@ -101,10 +101,11 @@ minimize(obj)
 cvx_end
 %% SRPCA
 
-% y_hat_sr=SRPCA_e1_e2_clean(y_noise,lam1(kk),lam2(kk),ones(size(y_noise)));
- x_sr = SRPCA_e1_e2_clean(y_noise(:,1),lam1,lam2,ones(size(y_noise(:,1))));
- y_sr = SRPCA_e1_e2_clean(y_noise(:,2),lam1,lam2,ones(size(y_noise(:,2))));
- y_hat_sr = [x_sr y_sr];
+ y_hat_sr1=SRPCA_e1_e2_clean_md(y_noise,lam1,lam2,ones(size(y_noise)));
+ y_hat_sr = y_hat_sr1';
+%  x_sr = SRPCA_e1_e2_clean(y_noise(:,1),lam1,lam2,ones(size(y_noise(:,1))));
+%  y_sr = SRPCA_e1_e2_clean(y_noise(:,2),lam1,lam2,ones(size(y_noise(:,2))));
+%  y_hat_sr = [x_sr y_sr];
 
 %% Accuracy
 y_cl = y_clean(ind,:);
@@ -145,7 +146,7 @@ Distance_sr = sqrt((y_h_sr(:,1)-y_cl(:,1)).^2 + (y_h_sr(:,2)-y_cl(:,2)).^2);
  precision_p = length(TP_p)/(length(TP_p) + length(FP_P));
  recall_p = length(TP_p)/(length(TP_p) + length(FN_P));
  Precision_P(cnt,i) = precision_p;
- Recall_P(cnt,kk) = recall_p;
+ Recall_P(cnt,i) = recall_p;
  
 %  dbstop if error
 % SRPCA
@@ -160,7 +161,7 @@ FN_sr = setdiff(ind,Inset2);
 precision_sr = length(TP_sr)/(length(TP_sr) + length(FP_sr));
 recall_sr = length(TP_sr)/(length(TP_sr) + length(FN_sr));
 Precision_SR(cnt,i) = precision_sr;
-Recall_SR(cnt,kk) = recall_sr;
+Recall_SR(cnt,i) = recall_sr;
  
 
 %  
