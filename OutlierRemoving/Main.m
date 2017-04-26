@@ -1,8 +1,8 @@
 %% Detect ouliters of one joint over total frame length
 
   clear all
- load('./InputData/videoPrediction_UYDP.mat');
- load('./InputData/label.mat');
+ load('../expData/videoPrediction_UYDP.mat');
+%  load('./InputData/label.mat');
 
 
 thresh = 0.2; % threshold for APK
