@@ -2,8 +2,10 @@
 
 clear; close all;
 
-addpath(genpath('../matlab'));
-addpath(genpath('../3rdParty'));
+rootPath = '~/research/code/OutlierCleaning';
+
+addpath(genpath(fullfile(rootPath, 'SupervisedCleaning/xk')));
+addpath(genpath(fullfile(rootPath, '3rdParty')));
 
 dataPath = '~/research/data/MHAD';
 load(fullfile(dataPath, 'MHAD_data_whole.mat'));
