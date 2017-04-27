@@ -3,6 +3,10 @@
 This code is for a designed framework which combines JBLD distance with Data Intepretation.
 This is joint-wise, cleaning outliers for each joint over total length of sequence
 
+To run the whole UYDP data set, run Main.m
+
+To visualize the results, run Visualize.m
+
 Main.m:
      1. UYDP dataset: 20 videos in total, 100 frames for each
      2. VideoPrediction_UYDP: 1)Input data from pose estimator 
