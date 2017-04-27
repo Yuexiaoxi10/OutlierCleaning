@@ -1,6 +1,6 @@
 %%
 %  load('./Results/NewTrajectory.mat');
- load('./InputData/param_visu.mat');
+ load('./param_visu.mat');
  %%
 fram = 100;np = 8;
 NewTrajc = struct;
@@ -28,7 +28,7 @@ end
 %%
 close all
 clear MFV_test
-Nvideo = 3;
+Nvideo = 12;
 % Trajc1 = NewTrajc(Nvideo).videos;
 picpath = './frames/';
 imlist = dir(fullfile(picpath, '*.jpg'));

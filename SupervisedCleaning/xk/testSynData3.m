@@ -27,26 +27,20 @@ y2_clean = y2;
 y2 = y2_clean + noiseLevel*randn(size(y2));
 
 % estimate poles of y2
-Hy2 = hankel(y2(1:5), y2(5:50));
-[U2,S2,V2] = svd(Hy2);
-r2est = U2(:, end);
-p2est = roots(flipud(r2est));
+p2est = estimatePole(y2(1:50), 4);
 
 % sort estimated poles of the known model
-[~, ind1] = sort(angle(p1));
-p1 = p1(ind1);
-[~, ind2] = sort(angle(p2));
-p2 = p2(ind2);
+p1 = sortPole(p1);
+p2 = sortPole(p2);
 
 % sort estimated poles of y2
-[~, ind2est] = sort(angle(p2est));
-p2est = p2est(ind2est);
+p2est = sortPole(p2est);
 
 % display the ratio of the sorted poles
 log(p2est)./log(p1)
 
 % estimate the ratio as the mean of ratios
-alpha = abs(mean(log(p2est)./log(p1)))
+alpha = estimateAlpha(p1, p2est);
 
 % get warpped poles of y2 from poles of the known model
 p2dtw = p1.^(alpha);
