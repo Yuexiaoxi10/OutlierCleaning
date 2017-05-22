@@ -1,4 +1,4 @@
-function [y_hat, outlier_hat, noise_hat] = method_l1l2(y, r, nc, lambda)
+function [y_hat, outlier_hat, noise_hat] = sords_l1l2(y, r, nc, lambda)
 
 % lambda = 1000;
 cvx_begin quiet
@@ -8,7 +8,7 @@ cvx_solver gurobi_2
     % obj = norm_nuc([Hy Hy_hat]);
     Hy_hat * r == 0;
     y-y_hat-outlier_hat-noise_hat == 0;
-    obj = sum(sum(abs(outlier_hat),2)) + lambda*(sum(sum(noise_hat.*noise_hat)));
+    obj = lambda*sum(sum(abs(outlier_hat),2)) + (sum(sum(noise_hat.*noise_hat)));
     minimize(obj)
 cvx_end
 
