@@ -1,4 +1,4 @@
-function pSort = sortPole(p)
+function [pSort, ind] = sortPole(p)
 % sort poles, first according to angles then according to magnitude
 % Input:
 % p: a column vector containing poles

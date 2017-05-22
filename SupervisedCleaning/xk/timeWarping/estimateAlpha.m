@@ -1,4 +1,4 @@
-function alpha = estimateAlpha(p1, p2)
+function [alpha, alphas] = estimateAlpha(p1, p2)
 % function estimateAlpha
 % estimate the time warping ratio between two systems by comparing two
 % group of poles
@@ -16,6 +16,7 @@ p1 = sortPole(p1);
 p2 = sortPole(p2);
 
 % estimate the ratio as the mean of ratios
-alpha = abs(mean(log(p2)./log(p1)));
+alphas = log(p2) ./ log(p1);
+alpha = abs(mean(alphas));
 
 end
