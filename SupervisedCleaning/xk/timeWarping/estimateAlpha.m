@@ -17,6 +17,6 @@ p2 = sortPole(p2);
 
 % estimate the ratio as the mean of ratios
 alphas = log(p2) ./ log(p1);
-alpha = abs(mean(alphas));
+alpha = real(mean(alphas));
 
 end

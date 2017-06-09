@@ -7,10 +7,10 @@ HyNorm = norm(Hy, 'fro');
 % HyNorm = 1;
 y = y / HyNorm;
 cvx_begin quiet
-cvx_solver gurobi_2
+cvx_solver mosek
     variables y_hat(size(y))
     Hy_hat = blockHankel(y_hat, [nr, nc]);
-    obj = norm(y-y_hat, 2) + lambda * norm(Hy_hat*r, 2);
+    obj = norm(Hy_hat*r, 2) + lambda*norm(y-y_hat, 2)  ;
     minimize(obj)
 cvx_end
 y = y * HyNorm;
