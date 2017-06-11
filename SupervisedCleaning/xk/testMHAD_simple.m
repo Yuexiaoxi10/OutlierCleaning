@@ -11,7 +11,7 @@ dataPath = '~/research/data/MHAD';
 load(fullfile(dataPath, 'MHAD_data_whole.mat'));
 
 %% get data
-A1 = data(label_act == 3);
+A1 = data(label_act == 1);
 n = length(A1);
 ys1 = cell(1, n);
 for i = 1:n
@@ -83,7 +83,7 @@ coef = coef(ind);
 e1 = zeros(1, length(ys1_test));
 e2 = zeros(1, length(ys1_test));
 for i = 1:length(ys1_test)
-% for i = 4
+% for i = 8
     y = ys1_test{i};
     % y = ys1_train{i};
     % y = y / norm(y);
@@ -106,7 +106,7 @@ for i = 1:length(ys1_test)
 
     [alpha1, alpha1s] = estimateAlpha(p1train, p1test);
     alpha1 = weights' * alpha1s;
-    alpha1 = 1;
+%     alpha1 = 0.75;
     
     p1testTW = p1train;
     ind = (abs(imag(p1train))>eps);
@@ -117,11 +117,11 @@ for i = 1:length(ys1_test)
     
     % Proposed
     nc = order+1;
-    lambda = 10;
+    lambda = 0;
 %     [y_hat,o_hat,n_hat] = sords_l1l2(y, r1testTW, nc, lambda);
 %     [y_hat] = sords_l2(y, r1testTW, nc);
     
-    [y_hat] = sords_l2_lagrangian(y, r1testTW, nc, lambda);
+    [y_hat] = sords_l1_lagrangian(y, r1testTW, nc, lambda);
 %     y2_hat = sords_l1l2(y, r2testTW, nc, lambda);
     
     e1(i) = norm(y-y_hat);
@@ -136,6 +136,6 @@ for i = 1:length(ys1_test)
     
     % 55;
     pause;
-    % keyboard;
+%     keyboard;
 end
 e1
