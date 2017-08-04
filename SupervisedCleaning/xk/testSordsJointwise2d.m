@@ -15,9 +15,15 @@ np = 14;
 visualize = 0;
 visualize3 = 0;
 
+nSub = 12;
+nAct = 11;
+accuracy = zeros(nAct, nSub);
+for ai = 1:nAct
+for si = 1:nSub
+
 %% load training data
-sInd = 1;
-aInd = 11;
+sInd = si;
+aInd = ai;
 rInd = 1;
 ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
 % A = getVelocity(A);
@@ -38,8 +44,8 @@ for i = 1:np
 end
 
 %% load testing data
-sInd = 2;
-aInd = 11;
+sInd = mod(si, nSub) + 1;
+aInd = ai;
 rInd = 1;
 subPath = sprintf('S%02d', sInd);
 actPath = sprintf('A%02d', aInd);
@@ -56,66 +62,59 @@ gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%0
 load(gtFile);
 
 %% outlier cleaning
-% lambdaList = 10.^(2:1:8);
-lambdaList = 1e4;
-ysCleanAll = cell(1, length(lambdaList));
-for j = 1:length(lambdaList)
-    lambda = lambdaList(j);
-    % lambda = 1e4;
-    lambda1 = 1e0;
-    lambda2 = 1;
-    ysClean = zeros(size(ysTest));
-    for i = 1:np
-        % for i = 7
-        fprintf('Performing SORDS on Joint %d/%d\n', i, np);
-        y = ysTest(2*i-1:2*i, :);
-        %     y = ysTest(i, :);
-        % yc1_test = hstln_mo(y, order);
-        %     ind = ceil(i/2);
-        ind = i;
-        [omega, residue, cnt] = outlierDetectionSords(y, rs{i}, 30);
-        %     [omega, residue, cnt] = outlierDetectionS2R3(y);
-        [yHat] = sords_l1_lagrangian_md(y, rs{i}, lambda, omega);
-        %     [omega, residue, cnt] = outlierDetectionSords(y(1,:), rs{i}, 10);
-        %     [omega, x] = outlierDetectionPropagation(y, rs{ind}, 30);
-%         [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda);
-        %     [yHat] = sords_l1_lagrangian(y, rs{i}, lambda);
-        %     [yHat] = sords_l1l2_lagrangian(y, rs(:,ind), nc, lambda1, lambda2);
-        ysClean(2*i-1:2*i, :) = yHat;
-    end
-    ysCleanAll{j} = ysClean;
-    % display results
-    if visualize3
-        figure(3);
-        for i = 1:size(ysTest, 1)
-            plot(ysTest(i,:), 'x-');
-            hold on;
-            plot(ysClean(i,:), 'o-');
-            plot(gtJoint(i,:), '>--');
-            title(sprintf('Test Instance %d',i));
-            hold off;
-            pause;
-        end
-    end
+lambda = 1e4;
+lambda1 = 1e0;
+lambda2 = 1;
+ysClean = zeros(size(ysTest));
+for i = 1:np
+    % for i = 7
+    fprintf('Performing SORDS on Joint %d/%d\n', i, np);
+    y = ysTest(2*i-1:2*i, :);
+    %     y = ysTest(i, :);
+    % yc1_test = hstln_mo(y, order);
+    %     ind = ceil(i/2);
+    ind = i;
+    [omega, residue, cnt] = outlierDetectionSords(y, rs{i}, 30);
+    %     [omega, residue, cnt] = outlierDetectionS2R3(y);
+    [yHat] = sords_l1_lagrangian_md(y, rs{i}, lambda, omega);
+    %     [omega, residue, cnt] = outlierDetectionSords(y(1,:), rs{i}, 10);
+    %     [omega, x] = outlierDetectionPropagation(y, rs{ind}, 30);
+    %         [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda);
+    %     [yHat] = sords_l1_lagrangian(y, rs{i}, lambda);
+    %     [yHat] = sords_l1l2_lagrangian(y, rs(:,ind), nc, lambda1, lambda2);
+    ysClean(2*i-1:2*i, :) = yHat;
 end
+%     % display results
+%     if visualize3
+%         figure(3);
+%         for i = 1:size(ysTest, 1)
+%             plot(ysTest(i,:), 'x-');
+%             hold on;
+%             plot(ysClean(i,:), 'o-');
+%             plot(gtJoint(i,:), '>--');
+%             title(sprintf('Test Instance %d',i));
+%             hold off;
+%             pause;
+%         end
+%     end
 
 
 
 
-%% PR curve
-outlierThres = 10;
-prec = zeros(1, length(ysCleanAll));
-rec = zeros(1, length(ysCleanAll));
-for j = 1:length(ysCleanAll)
-    [prec(j), rec(j)] = evalPrecRec(gtJoint, ysTest, ysCleanAll{j}, outlierThres);
-end
-if visualize
-    figure(4);
-    plot(prec, rec, '*-');
-    title('PR curve');
-    xlabel('Precision');
-    ylabel('Recall');
-end
+% %% PR curve
+% outlierThres = 10;
+% prec = zeros(1, length(ysCleanAll));
+% rec = zeros(1, length(ysCleanAll));
+% for j = 1:length(ysCleanAll)
+%     [prec(j), rec(j)] = evalPrecRec(gtJoint, ysTest, ysCleanAll{j}, outlierThres);
+% end
+% if visualize
+%     figure(4);
+%     plot(prec, rec, '*-');
+%     title('PR curve');
+%     xlabel('Precision');
+%     ylabel('Recall');
+% end
 
 %% display
 if visualize
@@ -142,6 +141,21 @@ if visualize
         pause(0.1);
     end
 end
+
+%%
+outlierThres = 30;
+o1 = zeros(size(gtJoint));
+o2 = zeros(size(gtJoint));
+o1(abs(ysTest-gtJoint) > outlierThres) = 1;
+o2(abs(ysClean-gtJoint) > outlierThres) = 1;
+% [prec, rec] = evalPrecRec(gtJoint, ysTest, ysClean, outlierThres);
+acc = (nnz(o1==1 & o2~=1)+eps) / (nnz(o1==1) + eps);
+acc
+accuracy(ai, si) = acc;
+end
+end
+
+save(fullfile(rootPath,'expData','accuracy'), 'accuracy', 'outlierThres');
 %%
 thres = 10;
 acc = computeAccuracy(ysClean, gtJoint, thres);
