@@ -50,7 +50,7 @@ rInd = 1;
 subPath = sprintf('S%02d', sInd);
 actPath = sprintf('A%02d', aInd);
 repPath = sprintf('R%02d', rInd);
-load(fullfile(rootPath, 'expData', 'mhad_pose',subPath,actPath,repPath,'poseCPM.mat'));
+load(fullfile(dataPath, 'mhad_pose',subPath,actPath,repPath,'poseCPM.mat'));
 ysTest = zeros(np*2, length(videoPrediction));
 for i = 1:length(videoPrediction)
     temp = videoPrediction{i}';
@@ -58,7 +58,7 @@ for i = 1:length(videoPrediction)
 end
 
 %% load ground truth file
-gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
+gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
 load(gtFile);
 
 %% outlier cleaning
