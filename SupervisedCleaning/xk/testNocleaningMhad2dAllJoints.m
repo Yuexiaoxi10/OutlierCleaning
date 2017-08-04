@@ -7,32 +7,39 @@ addpath(genpath(fullfile(rootPath, 'SupervisedCleaning/xk')));
 addpath(genpath(fullfile(rootPath, '3rdParty')));
 
 np = 14;
+visualize = 1;
 
 %% load testing data
+sInd = 2;
 aInd = 11;
+rInd = 1;
+subPath = sprintf('S%02d', sInd);
 actPath = sprintf('A%02d', aInd);
-load(fullfile(rootPath, 'expData', 'mhad_pose','S01',actPath,'R01','poseCPM.mat'));
+repPath = sprintf('R%02d', rInd);
+load(fullfile(rootPath, 'expData', 'mhad_pose',subPath,actPath,repPath,'poseCPM.mat'));
 ysTest = zeros(np*2, length(videoPrediction));
 for i = 1:length(videoPrediction)
     temp = videoPrediction{i}';
     ysTest(:, i) = temp(:);
 end
+ysClean = ysTest;
 
-%% outlier cleaning
-order = 6;
-ysClean = zeros(size(ysTest));
-for i = 1:size(ysTest, 1)
-    y = ysTest(i, :);
-    yHat = hstln_mo(y, order);
-    ysClean(i, :) = yHat;
-%     figure(1);
-%     plot(y, 'x-');
+%% load ground truth file
+gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
+load(gtFile);
+
+%% display results
+% figure(1);
+% for i = 1:size(ysTest, 1)
+%     if visualize==0, break; end
+%     plot(ysTest(i,:), 'x-');
 %     hold on;
-%     plot(yHat, 'o-');
+%     plot(ysClean(i,:), 'o-');
+%     plot(gtJoint(i,:), '>--');
 %     title(sprintf('Test Instance %d',i));
 %     hold off;
 %     pause;
-end
+% end
 
 %% display
 param = config();
@@ -43,18 +50,17 @@ imgRootPath = '~/research/data/BerkeleyMHAD/Camera/Cluster01';
 imgPath = fullfile(imgRootPath, 'Cam01','S01',actPath, 'R01');
 imgFile = dir(fullfile(imgPath, '*.pgm'));
 % load pose file
-posePath = fullfile(rootPath, 'expData', 'mhad_pose', 'S01', actPath, 'R01');
+posePath = fullfile(rootPath, 'expData', 'mhad_pose', subPath, actPath, repPath);
 poseFile = fullfile(posePath, 'poseCPM.mat');
 load(poseFile);
 % load ground truth file
-gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s01a%02dr01.mat',aInd));
+gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
 load(gtFile);
 
 for i = 1:length(videoPrediction)
     im = imread(fullfile(imgPath, imgFile(i).name));
 %     wei_visualize(im, videoPrediction{i}, param);
     yt = reshape(ysTest(:, i), 2, []).';
-    yc = reshape(ysClean(:, i), 2, []).';
     gt = reshape(gtJoint(:, i), 2, []).';
 %     wei_visualize(im, y, param);
 %     displayJointInColor(im, yc);
@@ -65,9 +71,9 @@ end
 
 %%
 thres = 10;
-acc = computeAccuracy(ysClean, gtJoint, thres);
-acc
+acc = computeAccuracy(ysTest, gtJoint, thres);
+
 %% plot acc curve with 
-[accVectorHstln, aucHstln] = plotAccCurve(ysClean, gtJoint);
-aucHstln
-save(fullfile(rootPath,'expData','accVectorHstln2d'), 'accVectorHstln', 'aucHstln');
+[accVectorNoCleaning, aucNoCleaning] = plotAccCurve(ysTest, gtJoint);
+aucNoCleaning
+save(fullfile(rootPath,'expData','accVectorNoCleaning2d'), 'accVectorNoCleaning', 'aucNoCleaning');

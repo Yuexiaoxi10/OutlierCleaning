@@ -8,10 +8,15 @@ addpath(genpath(fullfile(rootPath, '3rdParty')));
 v = 0;
 
 % selected subject - action - recording
-s = 1;
-a = 1;
-r = 1;
-
+s = 2;
+a = 11;
+r = 2;
+for s = 1:12
+    for a = 1:11
+        for r = 1:5
+            [s a r]
+if s==4 && a==8 && r==5, continue; end
+if exist(fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat', s,a,r)), 'file'), continue; end
 % the indices of MHAD skeleton corresponding to the 2D skeleton
 lut = [ 7 5 9 11 13 16 18 20 22 24 26 29 31 33 ];
 
@@ -22,7 +27,7 @@ drc = '~/research/data/BerkeleyMHAD';
 im_mc = load(sprintf('%s/Camera/Correspondences/corr_moc_img_s%02d_a%02d_r%02d.txt',drc,s,a,r));
 
 % load mocap data
-moc_data = load(sprintf('%s/Mocap/OpticalData/moc_s%02d_a%02d_r%02d.txt',drc,s,a,r));
+% moc_data = load(sprintf('%s/Mocap/OpticalData/moc_s%02d_a%02d_r%02d.txt',drc,s,a,r));
 
 % load skeleton data
 [skel,channel,framerate] = bvhReadFile(sprintf('%s/Mocap/SkeletalData/skl_s%02d_a%02d_r%02d.bvh',drc,s,a,r));
@@ -52,34 +57,34 @@ if v,
     open(movobj);
 end
 
-hf = figure('Position',[100,100,640,480]);
+% hf = figure('Position',[100,100,640,480]);
 
 np = length(lut);
 gtJoint = zeros(2*np, size(im_mc,1));
 for i=1:size(im_mc,1),
     
     % get the mocap frame
-    moc = reshape(moc_data(im_mc(i,3)+1,1:end-2),3,[]);
+%     moc = reshape(moc_data(im_mc(i,3)+1,1:end-2),3,[]);
     
     % get the skeleton frame
     jnt = reshape(skel_jnt(im_mc(i,3)+1,:),3,[]);
 %     jnt = bsxfun(@plus, jnt, [-520; -873; 143]);
     
     % read in the depth data
-    d1 = imread(sprintf('%s/Camera/Cluster01/Cam01/S%02d/A%02d/R%02d/img_l01_c01_s%02d_a%02d_r%02d_%05d.pgm',drc,s,a,r,s,a,r,i-1));
-    d1 = demosaic(d1,'grbg');
+%     d1 = imread(sprintf('%s/Camera/Cluster01/Cam01/S%02d/A%02d/R%02d/img_l01_c01_s%02d_a%02d_r%02d_%05d.pgm',drc,s,a,r,s,a,r,i-1));
+%     d1 = demosaic(d1,'grbg');
 
     % project 3D points onto image plane
-    DM = project_points(moc,om,T,f,c,k);
+%     DM = project_points(moc,om,T,f,c,k);
     DJ = project_points(jnt,om,T,f,c,k);
     
-    % plot the mocap markers and joint positions onto the image frame
-    figure(1)
-    imshow(d1)
-    hold on;
-    plot(DM(1,:),DM(2,:),'ob');
-    plot(DJ(1,:),DJ(2,:),'+r');
-    hold off;
+%     % plot the mocap markers and joint positions onto the image frame
+%     figure(1)
+% %     imshow(d1)
+%     hold on;
+% %     plot(DM(1,:),DM(2,:),'ob');
+%     plot(DJ(1,:),DJ(2,:),'+r');
+%     hold off;
 
     temp = DJ(:,lut);
     gtJoint(:, i) = temp(:);
@@ -96,6 +101,9 @@ end
 
 if v, close(movobj); end
 
-close(1);
+% close(1);
 
-save gtJoint gtJoint
+save(fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d', s,a,r)), 'gtJoint');
+        end
+    end
+end

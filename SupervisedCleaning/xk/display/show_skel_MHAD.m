@@ -19,6 +19,7 @@ for t=1:T
     plot3(x(:,t),y(:,t),z(:,t),'o');
     
     set(gca,'DataAspectRatio',[1 1 1]);
+    set(gca,'Ydir','reverse')
     axis([min(min(x)) max(max(x)) min(min(y)) max(max(y)) min(min(z)) max(max(z))]);
 %     axis([40 180 -100 100 80 300]);
     for j=1:34
@@ -26,13 +27,13 @@ for t=1:T
         c2=J(2,j);
         line([x(c1,t) x(c2,t)], [y(c1,t) y(c2,t)], [z(c1,t) z(c2,t)]);
     end    
-%     title([num2str(t) '/' num2str(T)]);
+    title([num2str(t) '/' num2str(T)]);
 %     axis tight;
     axis off;
 %     view(-30,30);
     drawnow;
 %     pause(0.1);
-    t
+%     t
 %     pause;
     35;
 end
