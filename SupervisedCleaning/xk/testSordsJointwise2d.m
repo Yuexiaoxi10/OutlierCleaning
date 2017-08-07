@@ -22,7 +22,7 @@ for ai = 1:nAct
 for si = 1:nSub
 
 %% load training data
-sInd = si;
+sInd = si - 1; if sInd==0, sInd=nSub; end
 aInd = ai;
 rInd = 1;
 ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
@@ -44,7 +44,7 @@ for i = 1:np
 end
 
 %% load testing data
-sInd = mod(si, nSub) + 1;
+sInd = si;
 aInd = ai;
 rInd = 1;
 subPath = sprintf('S%02d', sInd);
@@ -125,7 +125,7 @@ if visualize
     imgPath = fullfile(imgRootPath, 'Cam01','S01',actPath, 'R01');
     imgFile = dir(fullfile(imgPath, '*.pgm'));
     % load ground truth file
-    gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
+    gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
     load(gtFile);
     
     for i = 1:length(videoPrediction)
