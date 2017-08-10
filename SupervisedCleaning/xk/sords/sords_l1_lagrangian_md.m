@@ -13,7 +13,7 @@ HyNorm = norm(Hy, 'fro');
 % HyNorm = 1;
 y = y / HyNorm;
 cvx_begin quiet
-cvx_solver mosek
+% cvx_solver mosek
     variables y_hat(d, L)
     Hy_hat = blockHankel(y_hat, [d*nr, nc]);
 %     obj = sum(max(abs(omega.*(y-y_hat)))) + lambda/2*sum((Hy_hat*r).^2);

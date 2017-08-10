@@ -12,6 +12,7 @@ load(fullfile(dataPath, 'MHAD_data_fps22.mat'));
 % the indices of MHAD skeleton corresponding to the 2D skeleton
 lut = [ 7 5 9 11 13 16 18 20 22 24 26 29 31 33 ];
 np = 14;
+c = 0;
 visualize = 0;
 visualize3 = 0;
 
@@ -20,12 +21,14 @@ nAct = 11;
 accuracy = zeros(nAct, nSub);
 for ai = 1:nAct
 for si = 1:nSub
-
+% for ai = 7
+% for si = 6
 %% load training data
 sInd = si - 1; if sInd==0, sInd=nSub; end
 aInd = ai;
 rInd = 1;
 ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
+ysTrain = ysTrain(:, c+1:end-c);
 % A = getVelocity(A);
 % ysTrain = A{1};
 
@@ -56,65 +59,51 @@ for i = 1:length(videoPrediction)
     temp = videoPrediction{i}';
     ysTest(:, i) = temp(:);
 end
-
+ysTest = ysTest(:, c+1:end-c);
 %% load ground truth file
 gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
 load(gtFile);
+gtJoint = gtJoint(:, c+1:end-c);
 
 %% outlier cleaning
-lambda = 1e4;
+lambda = 1e6;
 lambda1 = 1e0;
 lambda2 = 1;
 ysClean = zeros(size(ysTest));
-for i = 1:np
-    % for i = 7
-    fprintf('Performing SORDS on Joint %d/%d\n', i, np);
-    y = ysTest(2*i-1:2*i, :);
-    %     y = ysTest(i, :);
+% for i = 1:np
+for i = 1:np*2
+% for i = 7
+    fprintf('Performing SORDS on Joint %d/%d\n', i, np*2);
+%     y = ysTest(2*i-1:2*i, :);
+        y = ysTest(i, :);
     % yc1_test = hstln_mo(y, order);
-    %     ind = ceil(i/2);
-    ind = i;
-    [omega, residue, cnt] = outlierDetectionSords(y, rs{i}, 30);
+        ind = ceil(i/2);
+%     ind = i;
+%     [omega, residue, cnt] = outlierDetectionSords(y, rs{ind}, 30);
     %     [omega, residue, cnt] = outlierDetectionS2R3(y);
-    [yHat] = sords_l1_lagrangian_md(y, rs{i}, lambda, omega);
+%     [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda, omega);
     %     [omega, residue, cnt] = outlierDetectionSords(y(1,:), rs{i}, 10);
     %     [omega, x] = outlierDetectionPropagation(y, rs{ind}, 30);
-    %         [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda);
-    %     [yHat] = sords_l1_lagrangian(y, rs{i}, lambda);
+%             [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda);
+        [yHat] = sords_l1_lagrangian(y, rs{ind}, lambda);
     %     [yHat] = sords_l1l2_lagrangian(y, rs(:,ind), nc, lambda1, lambda2);
-    ysClean(2*i-1:2*i, :) = yHat;
+%     ysClean(2*i-1:2*i, :) = yHat;
+    ysClean(i, :) = yHat;
 end
-%     % display results
-%     if visualize3
-%         figure(3);
-%         for i = 1:size(ysTest, 1)
-%             plot(ysTest(i,:), 'x-');
-%             hold on;
-%             plot(ysClean(i,:), 'o-');
-%             plot(gtJoint(i,:), '>--');
-%             title(sprintf('Test Instance %d',i));
-%             hold off;
-%             pause;
-%         end
-%     end
-
-
-
-
-% %% PR curve
-% outlierThres = 10;
-% prec = zeros(1, length(ysCleanAll));
-% rec = zeros(1, length(ysCleanAll));
-% for j = 1:length(ysCleanAll)
-%     [prec(j), rec(j)] = evalPrecRec(gtJoint, ysTest, ysCleanAll{j}, outlierThres);
-% end
-% if visualize
-%     figure(4);
-%     plot(prec, rec, '*-');
-%     title('PR curve');
-%     xlabel('Precision');
-%     ylabel('Recall');
-% end
+%% display results
+if visualize3
+    figure(3);
+    for i = 1:size(ysTest, 1)
+%     for i = 13:16
+        plot(ysTest(i,:), 'x-');
+        hold on;
+        plot(ysClean(i,:), 'o-');
+        plot(gtJoint(i,:), '>--');
+        title(sprintf('Test Instance %d',i));
+        hold off;
+        pause;
+    end
+end
 
 %% display
 if visualize
@@ -138,7 +127,7 @@ if visualize
         %     displayJointInColor(im, yc);
         displayJointCompareInColor(im, yt, gt);
         %     displayJointCompareInColor(im, yc, gt);
-        pause(0.1);
+        pause;
     end
 end
 
@@ -155,14 +144,4 @@ accuracy(ai, si) = acc;
 end
 end
 
-save(fullfile(rootPath,'expData','accuracy'), 'accuracy', 'outlierThres');
-%%
-thres = 10;
-acc = computeAccuracy(ysClean, gtJoint, thres);
-%% plot acc curve with 
-[accVectorSords, aucSords] = plotAccCurve(ysClean, gtJoint);
-aucSords
-save(fullfile(rootPath,'expData','accVectorSords2d'), 'accVectorSords', 'aucSords');
-
-
-
+save(fullfile(rootPath,'expData','accuracySords'), 'accuracy', 'outlierThres');

@@ -10,13 +10,16 @@ dataPath = '~/research/data/MHAD';
 np = 14;
 visualize = 0;
 visualize3 = 0;
+c = 30;
 
 nSub = 12;
 nAct = 11;
 accuracy = zeros(nAct, nSub);
-for ai = 1:nAct
-    for si = 1:nSub
-        
+% for ai = 1:nAct
+%     for si = 1:nSub
+for ai = 3
+    for si = 2
+
         %% load testing data
         sInd = si;
         aInd = ai;
@@ -30,11 +33,11 @@ for ai = 1:nAct
             temp = videoPrediction{i}';
             ysTest(:, i) = temp(:);
         end
-        
+        ysTest = ysTest(:, c+1:end-c);        
         %% load ground truth file
         gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
         load(gtFile);
-        
+        gtJoint = gtJoint(:, c+1:end-c);
         %% outlier cleaning
         lambda1 = 20;
         lambda2 = 1e10;
@@ -46,7 +49,7 @@ for ai = 1:nAct
             yHat = yHat';
             ysClean(i, :) = yHat;
         end
-        % display results
+        %% display results
         if visualize3
             figure(3);
             for i = 1:size(ysTest, 1)
@@ -54,6 +57,7 @@ for ai = 1:nAct
                 hold on;
                 plot(ysClean(i,:), 'o-');
                 plot(gtJoint(i,:), '>--');
+                plot(ysClean2(i,:), 'g+--');
                 title(sprintf('Test Instance %d',i));
                 hold off;
                 pause;

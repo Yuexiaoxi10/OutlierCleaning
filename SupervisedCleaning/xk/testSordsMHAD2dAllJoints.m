@@ -17,20 +17,26 @@ visualize = false;
 nSub = 12;
 nAct = 11;
 accuracy = zeros(nAct, nSub);
-for ai = 1:nAct
-for si = 1:nSub
+
+c = 30;
+% for ai = 1:nAct
+% for si = 1:nSub
+for ai = 3
+for si = 2
 % for si = 7
 %% load training data
-sInd = si;
+sInd = si - 1; if sInd==0, sInd=nSub; end
+% sInd = si;
 aInd = ai;
 rInd = 1;
-ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
+% ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
 % % A = getVelocity(A);
 % ysTrain = A{1};
 
-% gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
-% load(gtFile);
-% ysTrain = gtJoint;
+gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
+load(gtFile);
+ysTrain = gtJoint;
+ysTrain = ysTrain(:, c+1:end-c);
 
 % sInd = 2;
 % aInd = 11;
@@ -47,64 +53,65 @@ ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
 
 %% system ID of training data
 % order = 4;
-rs = cell(1, np);
+rs = cell(1, 2*np);
 for i = 1:length(rs)
 % for i = 7
     fprintf('Performing system ID %d/%d\n', i, length(rs));
 %     [r1Train] = sysIdOneJoint(ysTrain(i, 1:15), 5);
 %     rs(:, i) = r1Train;
-    [r1Train] = sysIdSvd(ysTrain(3*lut(i)-2:3*lut(i), :), 3);
+    [r1Train] = sysIdSvd(ysTrain(i, :), 3);
 %     r1Train = sysIdSvd(ysTrain(i, 1:15), 3);
     rs{i} = r1Train;
 end
 
 %% load testing data
-sInd = mod(si, nSub) + 1;
+sInd = si;
 aInd = ai;
 rInd = 1;
 subPath = sprintf('S%02d', sInd);
 actPath = sprintf('A%02d', aInd);
 repPath = sprintf('R%02d', rInd);
-load(fullfile(rootPath, 'expData', 'mhad_pose',subPath,actPath,repPath,'poseCPM.mat'));
+load(fullfile(dataPath, 'mhad_pose',subPath,actPath,repPath,'poseCPM.mat'));
 ysTest = zeros(np*2, length(videoPrediction));
 for i = 1:length(videoPrediction)
     temp = videoPrediction{i}';
     ysTest(:, i) = temp(:);
 end
+ysTest = ysTest(:, c+1:end-c);
 
 %% load ground truth file
-gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
+gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
 load(gtFile);
+gtJoint = gtJoint(:, c+1:end-c);
 
 %% outlier cleaning
 % nc = order+1;
-lambda = 1e4;
+lambda = 1e6;
 lambda1 = 1e0;
 lambda2 = 1;
 ysClean = zeros(size(ysTest));
-for i = 1:np
-% for i = 1:2*np
+% for i = 1:np
+for i = 1:size(ysTest, 1)
 % for i = 7
-    fprintf('Performing SORDS on Joint %d/%d\n', i, np);
-    y = ysTest(2*i-1:2*i, :);
-%     y = ysTest(i, :);
+    fprintf('Performing SORDS on Joint %d/%d\n', i, size(ysTest, 1));
+%     y = ysTest(2*i-1:2*i, :);
+    y = ysTest(i, :);
     % yc1_test = hstln_mo(y, order);
 %     ind = ceil(i/2);
-    ind = i;
     [omega, residue, cnt] = outlierDetectionSords(y, rs{i}, 10);
 %     [omega, residue, cnt] = outlierDetectionS2R3(y);
 %     [yHat] = sords_l1_lagrangian_md(y, rs{i}, lambda, omega);
 %     [omega, residue, cnt] = outlierDetectionSords(y(1,:), rs{i}, 10);
 %     [omega, x] = outlierDetectionPropagation(y, rs{ind}, 30);
-    [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda, omega);
+    [yHat] = sords_l1_lagrangian_md(y, rs{i}, lambda, omega);
 %     yHat = sords_nuc_l1_lagrangian_md(y, rs{i}, lambda, lambda2);
 %     [yHat] = sords_l1_lagrangian(y, rs{i}, lambda);
 %     [yHat] = sords_l1l2_lagrangian(y, rs(:,ind), nc, lambda1, lambda2);
-    ysClean(2*i-1:2*i, :) = yHat;
-%     ysClean(i, :) = yHat;
+%     ysClean(2*i-1:2*i, :) = yHat;
+    ysClean(i, :) = yHat;
 %     ysClean(i, :) = x;
 end
-e = ysClean-ysTest;
+% e = ysClean-ysTest;
 % norm(e)
 
 %% display results
@@ -131,7 +138,7 @@ if visualize
     imgPath = fullfile(imgRootPath, 'Cam01','S01',actPath, 'R01');
     imgFile = dir(fullfile(imgPath, '*.pgm'));
     % load ground truth file
-    gtFile = fullfile(rootPath, 'expData', 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
+    gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
     load(gtFile);
     
     for i = 1:length(videoPrediction)
