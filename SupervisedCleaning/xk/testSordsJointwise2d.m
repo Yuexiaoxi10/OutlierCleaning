@@ -12,54 +12,36 @@ load(fullfile(dataPath, 'MHAD_data_fps22.mat'));
 % the indices of MHAD skeleton corresponding to the 2D skeleton
 lut = [ 7 5 9 11 13 16 18 20 22 24 26 29 31 33 ];
 np = 14;
-visualize = false;
+c = 0;
+visualize = 0;
+visualize3 = 0;
 
 nSub = 12;
 nAct = 11;
 accuracy = zeros(nAct, nSub);
-
-c = 30;
-% for ai = 1:nAct
-% for si = 1:nSub
-for ai = 3
-for si = 2
-% for si = 7
+for ai = 1:nAct
+for si = 1:nSub
+% for ai = 7
+% for si = 6
 %% load training data
 sInd = si - 1; if sInd==0, sInd=nSub; end
-% sInd = si;
 aInd = ai;
 rInd = 1;
-% ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
-% % A = getVelocity(A);
-% ysTrain = A{1};
-
-gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
-load(gtFile);
-ysTrain = gtJoint;
+ysTrain = data{label_sub==sInd & label_act==aInd & label_rep==rInd};
 ysTrain = ysTrain(:, c+1:end-c);
-
-% sInd = 2;
-% aInd = 11;
-% rInd = 1;
-% subPath = sprintf('S%02d', sInd);
-% actPath = sprintf('A%02d', aInd);
-% repPath = sprintf('R%02d', rInd);
-% load(fullfile(rootPath, 'expData', 'mhad_pose',subPath,actPath,repPath,'poseCPM.mat'));
-% ysTrain = zeros(np*2, length(videoPrediction));
-% for i = 1:length(videoPrediction)
-%     temp = videoPrediction{i}';
-%     ysTrain(:, i) = temp(:);
-% end
+% A = getVelocity(A);
+% ysTrain = A{1};
 
 %% system ID of training data
 % order = 4;
-rs = cell(1, 2*np);
-for i = 1:length(rs)
+orderUpperBound = 3;
+rs = cell(1, np);
+for i = 1:np
 % for i = 7
-    fprintf('Performing system ID %d/%d\n', i, length(rs));
+    fprintf('Performing system ID %d/%d\n', i, np);
 %     [r1Train] = sysIdOneJoint(ysTrain(i, 1:15), 5);
 %     rs(:, i) = r1Train;
-    [r1Train] = sysIdSvd(ysTrain(i, :), 3);
+    [r1Train] = sysIdSvd(ysTrain(3*lut(i)-2:3*lut(i), :), orderUpperBound);
 %     r1Train = sysIdSvd(ysTrain(i, 1:15), 3);
     rs{i} = r1Train;
 end
@@ -78,55 +60,49 @@ for i = 1:length(videoPrediction)
     ysTest(:, i) = temp(:);
 end
 ysTest = ysTest(:, c+1:end-c);
-
 %% load ground truth file
 gtFile = fullfile(dataPath, 'mhad_gt', sprintf('gtJoint_s%02da%02dr%02d.mat',sInd,aInd,rInd));
 load(gtFile);
 gtJoint = gtJoint(:, c+1:end-c);
 
 %% outlier cleaning
-% nc = order+1;
 lambda = 1e6;
 lambda1 = 1e0;
 lambda2 = 1;
 ysClean = zeros(size(ysTest));
 % for i = 1:np
-for i = 1:size(ysTest, 1)
+for i = 1:np*2
 % for i = 7
-    fprintf('Performing SORDS on Joint %d/%d\n', i, size(ysTest, 1));
+    fprintf('Performing SORDS on Joint %d/%d\n', i, np*2);
 %     y = ysTest(2*i-1:2*i, :);
-    y = ysTest(i, :);
+        y = ysTest(i, :);
     % yc1_test = hstln_mo(y, order);
-%     ind = ceil(i/2);
-    [omega, residue, cnt] = outlierDetectionSords(y, rs{i}, 10);
-%     [omega, residue, cnt] = outlierDetectionS2R3(y);
-%     [yHat] = sords_l1_lagrangian_md(y, rs{i}, lambda, omega);
-%     [omega, residue, cnt] = outlierDetectionSords(y(1,:), rs{i}, 10);
-%     [omega, x] = outlierDetectionPropagation(y, rs{ind}, 30);
-    [yHat] = sords_l1_lagrangian_md(y, rs{i}, lambda, omega);
-%     yHat = sords_nuc_l1_lagrangian_md(y, rs{i}, lambda, lambda2);
-%     [yHat] = sords_l1_lagrangian(y, rs{i}, lambda);
-%     [yHat] = sords_l1l2_lagrangian(y, rs(:,ind), nc, lambda1, lambda2);
+        ind = ceil(i/2);
+%     ind = i;
+    [omega, residue, cnt] = outlierDetectionSords(y, rs{ind}, 30);
+    %     [omega, residue, cnt] = outlierDetectionS2R3(y);
+    [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda, omega);
+    %     [omega, residue, cnt] = outlierDetectionSords(y(1,:), rs{i}, 10);
+    %     [omega, x] = outlierDetectionPropagation(y, rs{ind}, 30);
+%             [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda);
+%         [yHat] = sords_l1_lagrangian(y, rs{ind}, lambda);
+    %     [yHat] = sords_l1l2_lagrangian(y, rs(:,ind), nc, lambda1, lambda2);
 %     ysClean(2*i-1:2*i, :) = yHat;
     ysClean(i, :) = yHat;
-%     ysClean(i, :) = x;
 end
-% e = ysClean-ysTest;
-% norm(e)
-
 %% display results
-if visualize
-figure(1);
-for i = 1:size(ysTest, 1)
-    if visualize==0, break; end
-    plot(ysTest(i,:), 'x-');
-    hold on;
-    plot(ysClean(i,:), 'o-');
-    plot(gtJoint(i,:), '>--');
-    title(sprintf('Test Instance %d',i));
-    hold off;
-    pause;
-end
+if visualize3
+    figure(3);
+    for i = 1:size(ysTest, 1)
+%     for i = 13:16
+        plot(ysTest(i,:), 'x-');
+        hold on;
+        plot(ysClean(i,:), 'o-');
+        plot(gtJoint(i,:), '>--');
+        title(sprintf('Test Instance %d',i));
+        hold off;
+        pause;
+    end
 end
 
 %% display
@@ -151,7 +127,7 @@ if visualize
         %     displayJointInColor(im, yc);
         displayJointCompareInColor(im, yt, gt);
         %     displayJointCompareInColor(im, yc, gt);
-        pause(0.1);
+        pause;
     end
 end
 
@@ -168,4 +144,4 @@ accuracy(ai, si) = acc;
 end
 end
 
-save accuracy accuracy outlierThres
+save(fullfile(rootPath,'expData','accuracySords'), 'accuracy', 'outlierThres');

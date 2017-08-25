@@ -1,8 +1,4 @@
-function [y_hat, e] = sords_l1_lagrangian(y, r, lambda, omega)
-
-if nargin < 4
-    omega = ones(size(y));
-end
+function [y_hat, e] = sords_l1l1_lagrangian(y, r, lambda)
 
 L = length(y);
 nc = length(r);
@@ -15,7 +11,7 @@ cvx_begin quiet
 cvx_solver mosek
     variables y_hat(size(y))
     Hy_hat = blockHankel(y_hat, [nr, nc]);
-    obj =  sum(abs(omega.*(y-y_hat))) + lambda/2*sum((Hy_hat*r).^2);
+    obj =  sum((y-y_hat).^2) + lambda*sum(abs(Hy_hat*r));
     minimize(obj)
 cvx_end
 y = y * HyNorm;

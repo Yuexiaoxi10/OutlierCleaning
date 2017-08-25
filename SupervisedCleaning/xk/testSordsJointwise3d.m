@@ -5,10 +5,11 @@ clear; close all;
 rootPath = '~/research/code/OutlierCleaning';
 addpath(genpath(fullfile(rootPath, 'SupervisedCleaning/xk')));
 addpath(genpath(fullfile(rootPath, '3rdParty')));
-addpath(genpath(fullfile(rootPath, 'OutlierRemoving/DataIntepret')));
 
 dataPath = '~/research/data/MHAD';
 load(fullfile(dataPath, 'MHAD_data_fps22.mat'));
+
+visualize = 0;
 
 %% load training data
 ysTrain = data{label_sub==1 & label_act==11 & label_rep==1};
@@ -16,10 +17,10 @@ ysTrain = data{label_sub==1 & label_act==11 & label_rep==1};
 %% system ID of 3D data
 order = 4;
 np = 35;
-rs = cell(1, 3*np);
-for i = 1:3*np
-    fprintf('Performing system ID %d/%d\n', i, 3*np);
-    y = ysTrain(i, :);
+rs = cell(1, np);
+for i = 1:np
+    fprintf('Performing system ID on Joint %d/%d\n', i, np);
+    y = ysTrain(3*i-2:3*i, :);
 %     [r1Train] = sysIdOneJoint(y, order);
     [r1Train] = sysIdSvd(y);
     rs{i} = r1Train;
@@ -49,32 +50,36 @@ end
 
 %% outlier cleaning
 nc = order+1;
-lambda = 100;
+lambda = 1e1;
 lambda1 = 1e0;
 lambda2 = 1e3;
 ysClean = zeros(size(ysTest));
-for i = 1:size(ysTest, 1)
-% for i = 4
-    fprintf('Performing SORDS on Joint %d/%d\n', i, size(ysTest, 1));
-    y = ysTest(i, :);
+for i = 1:np
+% for i = 5
+    fprintf('Performing SORDS on Joint %d/%d\n', i, np);
+    y = ysTest(3*i-2:3*i, :);
     % yc1_test = hstln_mo(y, order);
-%     ind = ceil(i/2);
+%     ind = ceil(i/3);
     ind = i;
     [omega, residue, cnt] = outlierDetectionSords(y, rs{ind}, 5);
-    [yHat] = sords_l1_lagrangian(y, rs{ind}, lambda, omega);
-%     [yHat] = sords_l1l1_lagrangian(y, rs{ind}, lambda);
+    [yHat] = sords_l1_lagrangian_md(y, rs{ind}, lambda, omega);
 %     [yHat] = sords_l1l2_lagrangian(y, rs(:,ind), nc, lambda1, lambda2);
-    ysClean(i, :) = yHat;
-%     figure(1);
-%     plot(y, 'x-');
-%     hold on;
-%     plot(yHat, 'o-');
-%     title(sprintf('Test Instance %d',i));
-%     hold off;
-%     pause;
+    ysClean(3*i-2:3*i, :) = yHat;
 end
 e = ysClean-ysTest;
 norm(e)
+
+%% display results
+figure(1);
+for i = 1:size(ysTest, 1)
+    if visualize==0, break; end
+    plot(ysTest(i,:), 'x-');
+    hold on;
+    plot(ysClean(i,:), 'o-');
+    title(sprintf('Test Instance %d',i));
+    hold off;
+    pause;
+end
 
 %%
 thres = 10;

@@ -4,8 +4,8 @@ addpath(genpath(fullfile('..','..','3rdParty','bvh-matlab')));
 
 dataPath = fullfile('~','research','data','BerkeleyMHAD','Mocap','SkeletalData');
 
-nSubject = 11;
-nAction = 12;
+nSubject = 12;
+nAction = 11;
 nRep = 5;
 fps = 22;
 
@@ -15,6 +15,7 @@ label_sub = zeros(1, nSubject * nAction * nRep);
 label_act = zeros(1, nSubject * nAction * nRep);
 label_rep = zeros(1, nSubject * nAction * nRep);
 for si = 1:nSubject
+% for si = 12
     for ai = 1:nAction
         for ri = 1:nRep
             fileName = sprintf('skl_s%02d_a%02d_r%02d.bvh',si,ai,ri);
@@ -57,6 +58,6 @@ if count <= length(data)
     label_rep(count:end) = [];
 end
 
-save('MHAD_data_s01a01r01_fps22.mat','data','label_sub','label_act','label_rep');
+save('MHAD_data_fps22.mat','data','label_sub','label_act','label_rep');
 
 end
