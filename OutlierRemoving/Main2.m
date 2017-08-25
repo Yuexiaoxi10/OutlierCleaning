@@ -1,7 +1,10 @@
 %% Detect ouliters of one joint over total frame length
 
 clear;
+[cwd] = fileparts(mfilename('fullpath'));
+cd(cwd);
 addpath(genpath('.'));
+addpath(genpath('../3rdParty'));
 load('./videoPrediction_UYDP.mat');
 load('./label.mat');
 

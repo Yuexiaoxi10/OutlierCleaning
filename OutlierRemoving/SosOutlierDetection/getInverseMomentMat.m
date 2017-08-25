@@ -1,5 +1,6 @@
 function [L, Minv] = getInverseMomentMat(data, mord)
 
+regul = 1e-10;
 n = size(data, 1);
 nVar = size(data, 2);
 [Dict,Indx] = momentPowers(0, nVar, 2*mord);
@@ -16,11 +17,11 @@ M = m(Mi);
 
 [~, S, V] = svd(M);
 s = diag(S);
-sInv = 1 ./ (s + eps);
+sInv = 1 ./ (s + regul);
 L = diag(sInv).^0.5 * V';
 
 if nargout > 1
-    Minv = inv(M+eps*eye(size(M)));
+    Minv = inv(M + regul * eye(size(M)));
 end
 % L'*L-Minv
 
