@@ -8,12 +8,12 @@ if nargin < 2
 end
 
 y = bsxfun(@minus, y, mean(y, 2));
-y = y + 10;
+% y = y + 10;
 H = blockHankel(y);
-order = rankEst(H, 0.8);
-order = min(order, orderUpperBound);
+% order = rankEst(H, 0.8);
+% order = min(order, orderUpperBound);
 
-% order = 4;
+order = 3;
 [yh,~,r2Train] = hstln_mo(y, order);
 r2Train = [r2Train; -1];
 % nc = order + 1;
