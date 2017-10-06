@@ -1,6 +1,6 @@
 % show my demo results with Wei's code
 
-close all; dbstop if error;
+clear; close all; dbstop if error;
 % addpath(genpath('../../matlab'));
 addpath(genpath('../../3rdParty'));
 
@@ -57,4 +57,4 @@ poseTracklet = associatePose(poseDetection, opt);
 poseTrack = poseTracklet;
 
 % display the trackes superposed on video
-displayPoseTrack(imgPath, poseTrack, true);
+displayPoseTrack(imgPath, poseTrack, false);
