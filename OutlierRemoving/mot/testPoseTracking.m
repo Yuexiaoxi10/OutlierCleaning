@@ -6,11 +6,13 @@ addpath(genpath('../../3rdParty'));
 
 patchSize = 10;
 
-imgPath = fullfile('..','..','expData','Sample','036778313');
+%imgPath = fullfile('..','..','expData','Sample','036778313');
+imgPath = fullfile('/Users/yuexizhang/Documents/Realtime/Video/1','036778313');
 imgFile = dir(fullfile(imgPath,'*.jpg'));
 
 % get pose detections
-poseFile = fullfile('..','..','expData','Sample','036778313.mat');
+%poseFile = fullfile('..','..','expData','Sample','036778313.mat');
+poseFile = fullfile('/Users/yuexizhang/Documents/Realtime/Realtime_Multi-Person_Pose_Estimation-master/Video_Results','036778313.mat');
 load(poseFile);
 
 nJ = 15;

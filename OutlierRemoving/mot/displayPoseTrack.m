@@ -15,9 +15,12 @@ if saveVideo
 end
 
 imgFiles = dir([imgPath '/*.jpg']);
+c = hsv(20);
+
 for i = 1:length(imgFiles)
-% for i = 1:50  
-    im = imread(fullfile(imgPath, imgFiles(i).name));
+%for i = 1:50
+     i
+    im = imshow(imread(fullfile(imgPath, imgFiles(i).name))),hold on;
     predict = [];
     index = [];
     for k = 1:length(poseTrack)
@@ -26,6 +29,10 @@ for i = 1:length(imgFiles)
             pred = [];
         else
             pred = poseTrack(k).traj(:, idx);
+            % show trajectory
+            plot(poseTrack(k).traj(1, max(1,idx-15):idx),...
+                poseTrack(k).traj(2, max(1,idx-15):idx),...
+                '-', 'color', c(mod(k,20)+1,:),'LineWidth',1.5);
             pred = reshape(pred, 2, [])';
             predict = cat(3, predict, pred);
             index = [index, k];
@@ -34,19 +41,24 @@ for i = 1:length(imgFiles)
     if isempty(predict)
         continue;
     end
-    wei_visualize(im, predict, param)
-    dispBbox(predict, index);
+    %wei_visualize(im, predict, param)
+   
+     
+     dispBbox(predict, index);
     
     if saveVideo
         currFrame = getframe;
         writeVideo(vidObj, currFrame);
     end
     title(sprintf('Frame %d', i));
-    pause(0.1);
+%     MFV(i) = getframe(gcf);
+    pause(0.2);
+%     pause;
 end
 
 if saveVideo
     close(vidObj);
 end
+%  my_frame2video(MFV);
 
 end
