@@ -13,8 +13,8 @@ axis equal
 axis off
 hold on;
 bodyHeight = max(videoPrediction(:,2)) - min(videoPrediction(:,2));
-plot_visible_limbs(model, facealpha, videoPrediction, truncate, bodyHeight/10);
-plot(videoPrediction(:,1), videoPrediction(:,2), 'y.', 'MarkerSize', bodyHeight/5);
+plot_visible_limbs(model, facealpha, videoPrediction, truncate, bodyHeight/30);
+plot(videoPrediction(:,1), videoPrediction(:,2), 'k.', 'MarkerSize', bodyHeight/32);
 % title('Full Pose');
 end
 
@@ -24,6 +24,8 @@ function plot_visible_limbs(model, facealpha, videoPrediction, truncate, stickwi
     colors = hsv(length(limbs));
 
     for p = 1:size(limbs,1) % visibility?
+        1;
+        
         if(truncate(limbs(p,1))==1 || truncate(limbs(p,2))==1)
             continue;
         end

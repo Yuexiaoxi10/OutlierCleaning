@@ -1,15 +1,23 @@
-fileRoot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/CPM/VideoResults/';
+%clear all
+%fileRoot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/CPM/VideoResults/';
+fileRoot = '/Users/yuexizhang/Documents/CPM/VideoResults/';
 Batch = 1;
 filePath = [fileRoot,'Batch',num2str(Batch),'/'];
-fileName = fullfile(filePath,['Results_Batch',num2str(Batch),'.mat']);
+%fileName = fullfile(filePath,['Results_Batch',num2str(Batch),'.mat']);
+fileName = fullfile(filePath,'video_singleOnly_Result.mat');
 load(fileName);
-%%
+addpath(genpath('../../3rdParty'));
+addpath(genpath('../../OutlierRemoving'));
+addpath('~/Documents/CPM/testing');
+param = config();
+%% Removing Outliers
+clear  NewTracj
 order = 2;
-lambda = 0.2;
+lambda = 1;
 
-for Nvideo = 7 %: length(video_single)
-    
-   videoPrediction = video_single(Nvideo).Results;
+for Nvideo = 15 %: length(video_single)
+    videoPrediction = video_singleOnly_Result(Nvideo).prediction;
+   %videoPrediction = video_single(Nvideo).Results;
    np = size(videoPrediction{1,1},1);
    Joint_Frm = cell(1, np);
    frame = length(videoPrediction);
@@ -31,7 +39,7 @@ for Nvideo = 7 %: length(video_single)
     
 %    CleanedTraj(Nvideo).Traject = Trajec_new;
     
-end
+
 
 NewTracj = cell(1,frame);
 pose = zeros(np,2);
@@ -46,22 +54,27 @@ for i = 1 : frame
     end
     
     NewTracj{1,i} = pose;
-    
+     
 end
 
-
-Picroot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/MPII_videos/Batch1_single/';
-
+    CleanedTraj(Nvideo).Traject = NewTracj;
+    
+end
+%
+%% Visualization
+%Picroot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/MPII_videos/Batch1_single/';
+Picroot = '/Users/yuexizhang/Documents/Realtime/Video/';
+PicPath = [Picroot,num2str(Batch),'/'];
 close all
 %dbstop if error
 % for vid = 1 : 10
-imPath = [Picroot,video_single(Nvideo).vidName]; 
+imPath = [PicPath,video_singleOnly_Result(Nvideo).vidName]; 
 imlist = dir(fullfile(imPath,'*.jpg'));
 % addpath(genpath('testing'));
 % load('../VideoResults/test.mat');
 
-%  videoPrediction = video_single(Nvideo).Results;
-  videoPrediction = NewTracj;
+ %videoPrediction = video_singleOnly_Result(Nvideo).prediction;
+ videoPrediction = NewTracj;
  
 for i = 1 : length(videoPrediction)
     
@@ -71,12 +84,12 @@ visualizeSkeleton(test_image, videoPrediction{1,i}, param);
 title([num2str(i),'/', num2str(frame)]);
 
 %MFV_test(i) = getframe(gcf);
-%     
-% pause(0.05);
-pause;
+%      
+pause(0.1);
+%pause;
 
 end
-%my_frame2video(MFV_test,1,'video');
+%my_frame2video(MFV_test,1,'video1_orig');
 % end
 
 
