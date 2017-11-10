@@ -5,7 +5,7 @@ assert(d == 1);
 omega = ones(1, n);
 
 y = y - mean(y);
-y = y / max(abs(y));
+y = y / (max(abs(y))+eps);
 
 Hy = blockHankel(y, [m, n-m+1]);
 
@@ -30,7 +30,8 @@ q = sum(Q.^2);
 
 cnt = zeros(1, n);
 for i = 1:length(q)
-    if q(i) > thres*6
+    %if q(i) > thres*6 % for UYDP
+    if q(i) > thres*3.5
         cnt(i:i+m-1) = cnt(i:i+m-1) + 1;
     end
 end
