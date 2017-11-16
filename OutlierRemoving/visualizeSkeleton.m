@@ -1,13 +1,14 @@
-function visualizeSkeleton(test_image, videoPrediction, param)
+%function visualizeSkeleton(test_image, videoPrediction, param)
+function visualizeSkeleton(videoPrediction, param)
 model = param.model(param.modelID);
 np = model.np;
 part_str = model.part_str;
 nstage = model.stage;
-im = imread(test_image);
+%im = imread(test_image);
 facealpha = 0.6; 
 truncate = zeros(1,np);
 
-imagesc(im);
+%imagesc(im);
 % imshow(im)
 axis equal
 axis off
