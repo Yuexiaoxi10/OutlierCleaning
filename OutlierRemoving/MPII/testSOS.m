@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 % For video 00091975
 % take look at joint #3,4,5
 Nvideo = 7;
@@ -26,16 +27,27 @@ ylim([600 1500]);
 
 lambda = 1;
 %for jt = 4 : 5
+=======
+close 
+jt = 4;
+Joint = Joint_Frm{1,jt};
+order = 2;
+% figure;
+% plot(Joint(1,:),'r-*');
+
+
+%%
+close
+lambda = 0.05;
+>>>>>>> 4db70f5bf0fa0a516788beca8c4b8c353f269af0
 [omegaX, pX, cntX] = outlierDetectionSOS(Joint_Frm{1,jt}(1,:), order+1);
 [omegaY, pY, cntY] = outlierDetectionSOS(Joint_Frm{1,jt}(2,:), order+1);
-omega = double(omegaX & omegaY);
- Trajec = l2_fastalm_mo(Joint_Frm{1,jt},lambda,'omega',omega);
- 
- %Trajec_new{1,jt} = Trajec;
-%end
+ omega = double(omegaX & omegaY);
+Trajec = l2_fastalm_mo(Joint_Frm{1,jt},lambda,'omega',omega);
 
- figure(2)
- plot(Joint(dim,:),'r-*'),hold on
- plot(Trajec(dim,:),'b-o');
- %ylim([min(Joint(dim,:))-10 max(Joint(dim,:))+10]);
- 
+figure(1)
+plot(Joint(1,:),'r-*'),hold on
+plot(Trajec(1,:),'b-o');
+
+%%
+
