@@ -41,7 +41,7 @@ for i = 1:length(imgFiles)
     if isempty(predict)
         continue;
     end
-    %wei_visualize(im, predict, param)
+%     wei_visualize(im, predict, param)
    
      
      dispBbox(predict, index);
