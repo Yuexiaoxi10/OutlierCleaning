@@ -76,8 +76,9 @@ PicPath = [Picroot,num2str(Batch),'/'];
 %param = config();
 c = hsv(20);
 %% comparing key images for raw data and cleaned data
+clear MFV_test
 figure
-for Nvideo= numVid : length(CleanedTraj)
+for Nvideo= numVid : 10%length(CleanedTraj)
     imPath = [PicPath,video_track(Nvideo).vidName];
     imlist = dir(fullfile(imPath,'*.jpg'));
     keyframe = video_track(Nvideo).keyframe;
@@ -110,10 +111,18 @@ for Nvideo= numVid : length(CleanedTraj)
         for nPerson = 1 : length(prediction)
             
             visualizeSkeleton(compareTracj(nPerson).comp{1,i}, param);
+            
+            
+%             currFrame = getframe;
+%             writeVideo(vidObj, currFrame);
         end
      
     end
-    pause;
+    MFV_test(Nvideo) = getframe(gcf);
+    
+    my_frame2video(MFV_test,'comparison');
+    
+    pause(0.2);
     %}
    
 
