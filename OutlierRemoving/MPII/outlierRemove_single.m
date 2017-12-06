@@ -17,7 +17,7 @@ order = 2;
 lambda = 1;
 
 CleanedTraj(1:length(video_track)) = struct('vidName',[],'traject',[]);
-for Nvideo = 7 %: 5 %length(video_single)
+for Nvideo = 1 %: 5 %length(video_single)
    
     %videoPrediction = video_singleOnly_Result(Nvideo).prediction;
    Prediction = video_track(Nvideo).prediction;
@@ -69,10 +69,9 @@ close all
 %Picroot = '/Users/yuexizhang/Documents/Realtime/Video/';
 Picroot = '/media/yuexi/DATA/MPII_data/';
 PicPath = [Picroot,num2str(Batch),'/'];
-param = config();
 c = hsv(20);
 
-for Nvideo = 7 %: 5
+for Nvideo = 1 %: 5
 imPath = [PicPath,CleanedTraj(Nvideo).vidName]; 
 imlist = dir(fullfile(imPath,'*.jpg'));
 % addpath(genpath('testing'));
@@ -92,7 +91,7 @@ imlist = dir(fullfile(imPath,'*.jpg'));
         imshow(im)
         title([num2str(i),'/',num2str(length(imlist))]);
         hold on;
-        for nPerson = 1 %: length(prediction)
+        for nPerson = 1 : length(Traject)
             videoPrediction = Traject(nPerson).trj;
             %videoPrediction = video_track(Nvideo).prediction(np).pred;
                 %test_image = [imgPath,annolist_test_single(i).image.name];
