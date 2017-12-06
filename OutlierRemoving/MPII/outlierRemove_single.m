@@ -1,27 +1,34 @@
 dbstop if error
 %fileRoot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/CPM/VideoResults/';
-%fileRoot = '/Users/yuexizhang/Documents/CPM/VideoResults/';
-fileRoot = '/home/yuexi/Documents/CPM/VideoResults/';
-Batch = 1;
+fileRoot = '/Users/yuexizhang/Documents/CPM/VideoResults/'; % ios
+%fileRoot = '/home/yuexi/Documents/CPM/VideoResults/'; %linux
+Batch = 2;
 filePath = [fileRoot,'Batch',num2str(Batch),'/'];
 %fileName = fullfile(filePath,['Results_Batch',num2str(Batch),'.mat']);
-fileName = fullfile(filePath,'video_track_center_pose.mat');
+resultName = ['video_track_pose_center_b',num2str(Batch),'.mat'];
+fileName = fullfile([filePath,'/',resultName]);
 load(fileName);
 addpath(genpath('../../3rdParty'));
 addpath(genpath('../../OutlierRemoving'));
-addpath('~/Documents/CPM/testing');
+%addpath('~/Documents/CPM/testing');
+addpath(genpath('~/Documents/LabLife/Reaserch/SpringforPhD/CPM/testing/'));
 param = config();
 %% Removing Outliers
-clear  NewTracj
+
 order = 2;
 lambda = 1;
-
+numVid = 1;
 CleanedTraj(1:length(video_track)) = struct('vidName',[],'traject',[]);
+<<<<<<< HEAD
 for Nvideo = 1 %: 5 %length(video_single)
+=======
+for Nvideo = numVid : length(video_track)
+>>>>>>> c1ddbc8132eea2172f84aa12a9c141a70e37e5ac
    
     %videoPrediction = video_singleOnly_Result(Nvideo).prediction;
    Prediction = video_track(Nvideo).prediction;
    Rect = video_track(Nvideo).annorect;
+   Traj(1:length(Rect)) = struct('trj',[]);
     for nPerson = 1 : length(Rect)
         videoPrediction = Prediction(nPerson).pred;
         njt = size(videoPrediction{1,1},1); % number of joints
@@ -58,28 +65,93 @@ for Nvideo = 1 %: 5 %length(video_single)
      
         end
         Traj(nPerson).trj = NewTraj;
+        clear NewTraj
     
     end
 CleanedTraj(Nvideo).vidName = video_track(Nvideo).vidName;
 CleanedTraj(Nvideo).traject = Traj;
+clear Traj
 end
 %%
 close all
-%Picroot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/MPII_videos/Batch1_single/';
-%Picroot = '/Users/yuexizhang/Documents/Realtime/Video/';
-Picroot = '/media/yuexi/DATA/MPII_data/';
+%Picroot = '~/Desktop/videos/';
+Picroot = '/Users/yuexizhang/Documents/Realtime/Video/';
+%Picroot = '/media/yuexi/DATA/MPII_data/';
 PicPath = [Picroot,num2str(Batch),'/'];
+<<<<<<< HEAD
+=======
+%param = config();
+>>>>>>> c1ddbc8132eea2172f84aa12a9c141a70e37e5ac
 c = hsv(20);
+%% comparing key images for raw data and cleaned data
+clear MFV_test
+figure
+for Nvideo= numVid : length(CleanedTraj)
+    imPath = [PicPath,video_track(Nvideo).vidName];
+    imlist = dir(fullfile(imPath,'*.jpg'));
+    keyframe = video_track(Nvideo).keyframe;
+    keyInd = find(strcmp({imlist.name}, keyframe)==1);
+    prediction = video_track(Nvideo).prediction;
+    Traject = CleanedTraj(Nvideo).traject;
+    compareTraj(1:length(prediction)) = struct('comp',[]);
+    
+     for nPerson = 1 : length(prediction)
+        
+        videoPrediction = prediction(nPerson).pred{1,keyInd};
+        cleanedPrediction = Traject(nPerson).trj{1,keyInd};
+        compareTracj(nPerson).comp{1,1} = videoPrediction;% origin data
+        compareTracj(nPerson).comp{1,2} = cleanedPrediction; %cleaned data
+  
+     end
+    
+    
+    Title = {'Original Detection','Cleaned Detection'};
+    for i = 1 : 2
+        
+        subplot(2,1,i)
+        hold off
+        image = [imlist(keyInd).folder,'/',imlist(keyInd).name];
+        img = imread(image);
+        imshow(img)
+        %title([num2str(keyInd),'/',num2str(length(imlist))]);
+        title(['Video:',num2str(Nvideo),'  ',Title{1,i}]);
+        hold on;
+        for nPerson = 1 : length(prediction)
+            
+            visualizeSkeleton(compareTracj(nPerson).comp{1,i}, param);
+            
+            
+%             currFrame = getframe;
+%             writeVideo(vidObj, currFrame);
+        end
+     
+    end
+    MFV_test(Nvideo) = getframe(gcf);
+    
+    %my_frame2video(MFV_test,'comparison');
+    
+    pause(0.2);
+    %}
+   
 
+<<<<<<< HEAD
 for Nvideo = 1 %: 5
 imPath = [PicPath,CleanedTraj(Nvideo).vidName]; 
+=======
+end
+%% making video
+for Nvideo = numVid %: 5
+%imPath = [PicPath,CleanedTraj(Nvideo).vidName]; 
+imPath = [PicPath,video_track(Nvideo).vidName];
+>>>>>>> c1ddbc8132eea2172f84aa12a9c141a70e37e5ac
 imlist = dir(fullfile(imPath,'*.jpg'));
+keyframe = video_track(Nvideo).keyframe;
 % addpath(genpath('testing'));
 % load('../VideoResults/test.mat');
+keyInd = find(strcmp({imlist.name}, keyframe)==1);
+prediction = video_track(Nvideo).prediction;
 
- %videoPrediction = video_singleOnly_Result(Nvideo).prediction;
- %videoPrediction = NewTraj;
- Traject = CleanedTraj(Nvideo).traject;
+ %Traject = CleanedTraj(Nvideo).traject;
 
     for i = 1 : length(imlist)
     
@@ -91,9 +163,13 @@ imlist = dir(fullfile(imPath,'*.jpg'));
         imshow(im)
         title([num2str(i),'/',num2str(length(imlist))]);
         hold on;
+<<<<<<< HEAD
         for nPerson = 1 : length(Traject)
+=======
+        for nPerson = 1 : length(prediction)
+>>>>>>> c1ddbc8132eea2172f84aa12a9c141a70e37e5ac
             videoPrediction = Traject(nPerson).trj;
-            %videoPrediction = video_track(Nvideo).prediction(np).pred;
+            %videoPrediction = prediction(nPerson).pred;
                 %test_image = [imgPath,annolist_test_single(i).image.name];
             
             visualizeSkeleton(videoPrediction{1,i}, param);
@@ -102,11 +178,13 @@ imlist = dir(fullfile(imPath,'*.jpg'));
                 %MFV_test(i) = getframe(gcf);
    
         end
-        pause(0.3);
+        pause;
     end
 
 %my_frame2video(MFV_test,1,'video1_orig');
 end
+
+
 
 
 
