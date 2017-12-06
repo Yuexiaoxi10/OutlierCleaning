@@ -1,11 +1,12 @@
 dbstop if error
-fileRoot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/CPM/VideoResults/';
-%fileRoot = '/Users/yuexizhang/Documents/CPM/VideoResults/';
-%fileRoot = '/home/yuexi/Documents/CPM/VideoResults/';
-Batch = 1;
+%fileRoot = '/Users/zhangyuexi/Documents/LabLife/Reaserch/SpringforPhD/CPM/VideoResults/';
+fileRoot = '/Users/yuexizhang/Documents/CPM/VideoResults/'; % ios
+%fileRoot = '/home/yuexi/Documents/CPM/VideoResults/'; %linux
+Batch = 2;
 filePath = [fileRoot,'Batch',num2str(Batch),'/'];
 %fileName = fullfile(filePath,['Results_Batch',num2str(Batch),'.mat']);
-fileName = fullfile(filePath,'video_track_center_pose_b1.mat');
+resultName = ['video_track_pose_center_b',num2str(Batch),'.mat'];
+fileName = fullfile([filePath,'/',resultName]);
 load(fileName);
 addpath(genpath('../../3rdParty'));
 addpath(genpath('../../OutlierRemoving'));
@@ -69,8 +70,8 @@ clear Traj
 end
 %%
 close all
-Picroot = '~/Desktop/videos/';
-%Picroot = '/Users/yuexizhang/Documents/Realtime/Video/';
+%Picroot = '~/Desktop/videos/';
+Picroot = '/Users/yuexizhang/Documents/Realtime/Video/';
 %Picroot = '/media/yuexi/DATA/MPII_data/';
 PicPath = [Picroot,num2str(Batch),'/'];
 %param = config();
@@ -78,7 +79,7 @@ c = hsv(20);
 %% comparing key images for raw data and cleaned data
 clear MFV_test
 figure
-for Nvideo= numVid : 10%length(CleanedTraj)
+for Nvideo= numVid : length(CleanedTraj)
     imPath = [PicPath,video_track(Nvideo).vidName];
     imlist = dir(fullfile(imPath,'*.jpg'));
     keyframe = video_track(Nvideo).keyframe;
@@ -120,7 +121,7 @@ for Nvideo= numVid : 10%length(CleanedTraj)
     end
     MFV_test(Nvideo) = getframe(gcf);
     
-    my_frame2video(MFV_test,'comparison');
+    %my_frame2video(MFV_test,'comparison');
     
     pause(0.2);
     %}
