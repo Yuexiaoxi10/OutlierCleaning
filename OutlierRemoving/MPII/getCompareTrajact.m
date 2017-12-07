@@ -12,11 +12,10 @@ compareTraject(1 : length(cleanedTraject)) = struct('traj',[],'keyframe',[]);
 %clear MFV_test
 %figure
 for Nvideo= 1 : length(cleanedTraject)
-<<<<<<< HEAD
-    clear Traject comTraj
-=======
+
+    
     clear Traject comTraj 
->>>>>>> 7da54bfaca2fe709f5138f0627f9139c559f4631
+
     %fprintf('video:%d/%d \n',Nvideo,length(cleanedTraject));
     
     %imPath = [PicPath,video_track(Nvideo).vidName];

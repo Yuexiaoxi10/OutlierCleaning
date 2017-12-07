@@ -17,13 +17,13 @@ allBatch = 25;
 %param = config();
 %%
 Result_single(1:allBatch) = struct('Batch',[]);
-<<<<<<< HEAD
+
 for Batch = 16 : 25  
     clear compareTraject cleanedTraject 
-=======
-for Batch = 1 : 15  
-    clear compareTraject cleanedTraject
->>>>>>> 7da54bfaca2fe709f5138f0627f9139c559f4631
+
+    %for Batch = 1 : 15  
+    %clear compareTraject cleanedTraject
+
     fprintf('Batch:%d/%d \n', Batch, allBatch);
     
     [cleanedTraject,video_track] = getcleanTraject(Batch, fileRoot);
@@ -32,12 +32,11 @@ for Batch = 1 : 15
     
    
     Result_single(Batch).Batch = compareTraject;
-<<<<<<< HEAD
+
     save([fileRoot,'Result_MPII_single.mat'],'Result_single');
     %save([fileRoot,'Result_MPII_single_part2.mat'],'Result_single');
-=======
-    %save([fileRoot,'Result_MPII_single.mat'],'Result_single');
->>>>>>> 7da54bfaca2fe709f5138f0627f9139c559f4631
+
+    
     
 end
 fprintf('All Done!');
