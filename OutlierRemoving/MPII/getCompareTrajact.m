@@ -12,7 +12,11 @@ compareTraject(1 : length(cleanedTraject)) = struct('traj',[],'keyframe',[]);
 %clear MFV_test
 %figure
 for Nvideo= 1 : length(cleanedTraject)
+<<<<<<< HEAD
     clear Traject comTraj
+=======
+    clear Traject comTraj 
+>>>>>>> 7da54bfaca2fe709f5138f0627f9139c559f4631
     %fprintf('video:%d/%d \n',Nvideo,length(cleanedTraject));
     
     %imPath = [PicPath,video_track(Nvideo).vidName];
@@ -34,37 +38,5 @@ for Nvideo= 1 : length(cleanedTraject)
      end
      compareTraject(Nvideo).traj = comTraj;
      compareTraject(Nvideo).keyframe = video_track(Nvideo).keyframe;
-     
-    
-    %{
-    Title = {'Original Detection','Cleaned Detection'};
-    for i = 1 : 2
-        
-        subplot(2,1,i)
-        hold off
-        image = [imlist(keyInd).folder,'/',imlist(keyInd).name];
-        img = imread(image);
-        imshow(img)
-        %title([num2str(keyInd),'/',num2str(length(imlist))]);
-        title(['Video:',num2str(Nvideo),'  ',Title{1,i}]);
-        hold on;
-        for nPerson = 1 : length(prediction)
-            
-            visualizeSkeleton(compareTracj(nPerson).comp{1,i}, param);
-            
-            
-%             currFrame = getframe;
-%             writeVideo(vidObj, currFrame);
-        end
-     
-    end
-    MFV_test(Nvideo) = getframe(gcf);
-    
-    %my_frame2video(MFV_test,'comparison');
-    
-    pause(0.2);
-    
-   %}
-
-
+     compareTraject(Nvideo).vidName = video_track(Nvideo).vidName;
 end
