@@ -6,15 +6,25 @@ close all
 PicPath = [Picroot,num2str(Batch),'/'];
 
 %param = config();
-c = hsv(20);
-compareTraject(1 : length(cleanedTraject)) = struct('traj',[],'keyframe',[]);
+vidNum = length(cleanedTraject);
+compareTraject(1 : vidNum) = struct('traj',[],'keyframe',[]);
 %% comparing key images for raw data and cleaned data
 %clear MFV_test
 %figure
+
+for Nvideo = 1  : vidNum
+    
+    %if Nvideo == 8,keyboard;end
+    
+    
+    
+    %clear Traject comTraj 
+
 for Nvideo= 1 : length(cleanedTraject)
 
     
     clear Traject comTraj 
+
 
     %fprintf('video:%d/%d \n',Nvideo,length(cleanedTraject));
     
@@ -26,7 +36,7 @@ for Nvideo= 1 : length(cleanedTraject)
     prediction = video_track(Nvideo).prediction;
     Traject = cleanedTraject(Nvideo).traject;
     %compareTraj(1:length(prediction)) = struct('comp',[]);
-    
+    comTraj = struct('origin',[],'cleaned',[]);
      for nPerson = 1 : length(prediction)
         
         videoPrediction = prediction(nPerson).pred{1,keyInd};
@@ -38,4 +48,6 @@ for Nvideo= 1 : length(cleanedTraject)
      compareTraject(Nvideo).traj = comTraj;
      compareTraject(Nvideo).keyframe = video_track(Nvideo).keyframe;
      compareTraject(Nvideo).vidName = video_track(Nvideo).vidName;
+     clear comTraj Traject
+end
 end
