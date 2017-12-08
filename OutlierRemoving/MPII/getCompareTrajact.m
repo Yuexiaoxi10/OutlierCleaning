@@ -11,6 +11,7 @@ compareTraject(1 : vidNum) = struct('traj',[],'keyframe',[]);
 %% comparing key images for raw data and cleaned data
 %clear MFV_test
 %figure
+<<<<<<< HEAD
 for Nvideo = 1  : vidNum
     
     %if Nvideo == 8,keyboard;end
@@ -18,6 +19,13 @@ for Nvideo = 1  : vidNum
     
     
     %clear Traject comTraj 
+=======
+for Nvideo= 1 : length(cleanedTraject)
+
+    
+    clear Traject comTraj 
+
+>>>>>>> e302b41ba2e507017d6919261bbe55c73353fdc0
     %fprintf('video:%d/%d \n',Nvideo,length(cleanedTraject));
     
     %imPath = [PicPath,video_track(Nvideo).vidName];
