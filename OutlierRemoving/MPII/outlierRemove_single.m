@@ -23,7 +23,7 @@ for Batch = 1 : 15
     
    
     Result_single(Batch).Batch = compareTraject;
-    %save([fileRoot,'Result_MPII_single.mat'],'Result_single');
+    save([fileRoot,'Result_MPII_single_part1.mat'],'Result_single');
     
 end
 fprintf('All Done!');
